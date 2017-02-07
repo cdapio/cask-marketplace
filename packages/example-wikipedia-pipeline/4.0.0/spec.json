@@ -6,7 +6,7 @@
   "org": "Cask Data, Inc.",
   "created": 1481840165,
   "categories": [ "example" ],
-  "cdapVersion": "[4.0.0,4.1.0)",
+  "cdapVersion": "[4.0.0,4.1.0-SNAPSHOT)",
   "actions": [
     {
       "type": "create_stream",
