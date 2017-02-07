@@ -1,9 +1,9 @@
 {
   "parents": [
-    "system:cdap-etl-batch[3.5.0,4.1.0)",
-    "system:cdap-etl-realtime[3.5.0,4.1.0)",
-    "system:cdap-data-pipeline[3.5.0,4.1.0)",
-    "system:cdap-data-streams[3.5.0,4.1.0)"
+    "system:cdap-etl-batch[3.5.0,4.1.0-SNAPSHOT)",
+    "system:cdap-etl-realtime[3.5.0,4.1.0-SNAPSHOT)",
+    "system:cdap-data-pipeline[3.5.0,4.1.0-SNAPSHOT)",
+    "system:cdap-data-streams[3.5.0,4.1.0-SNAPSHOT)"
   ],
   "properties": {
     "widgets.MainframeReader-batchsource": "{\"metadata\":{\"spec-version\":\"1.0\"},\"configuration-groups\":[{\"label\":\"Mainframe Reader Configuration\",\"properties\":[{\"widget-type\":\"textbox\",\"label\":\"Reference Name\",\"name\":\"referenceName\"},{\"widget-type\":\"textarea\",\"label\":\"COBOL Copybook\",\"name\":\"copybookContents\"},{\"widget-type\":\"textbox\",\"label\":\"Binary File Path\",\"name\":\"binaryFilePath\"},{\"widget-type\":\"csv\",\"label\":\"Fields to drop\",\"name\":\"drop\",\"description\":\"List of fields to drop.\",\"widget-attributes\":{\"delimiter\":\",\"}},{\"widget-type\":\"textbox\",\"label\":\"Maximum Split Size\",\"name\":\"maxSplitSize\"},{\"widget-type\":\"select\",\"label\":\"Charset \",\"name\":\"charset\",\"widget-attributes\":{\"values\":[\"EBCDIC-Arabic\",\"EBCDIC-Denmark, Norway\",\"EBCDIC-France\",\"EBCDIC-Germany\",\"EBCDIC-Greece\",\"EBCDIC-International\",\"EBCDIC-Italy\",\"EBCDIC-Russia\",\"EBCDIC-Spain\",\"EBCDIC-Thailand\",\"EBCDIC-Turkey\",\"EBCDIC-US\"],\"default\":\"EBCDIC-US\"}}]}],\"outputs\":[{\"name\":\"schema\",\"widget-type\":\"schema\",\"widget-attributes\":{\"schema-types\":[\"boolean\",\"int\",\"long\",\"float\",\"double\",\"bytes\",\"string\"],\"schema-default-type\":\"string\"}}]}",

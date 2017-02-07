@@ -7,7 +7,7 @@
   "created": 1473901763,
   "categories": [ "hydrator-plugin" ],
   "license": "license.txt",
-  "cdapVersion": "[4.0.0,4.1.0)",
+  "cdapVersion": "[4.0.0,4.1.0-SNAPSHOT)",
   "actions": [
     {
       "type": "informational",
