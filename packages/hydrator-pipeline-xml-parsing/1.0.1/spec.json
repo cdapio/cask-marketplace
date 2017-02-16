@@ -15,8 +15,8 @@
         {
           "name": "artifact",
           "value": {
-            "scope": "system",
-            "name": "cdap-data-pipeline",
+            "scope": "SYSTEM",
+            "name": "cdap-data-streaming",
             "version": "4.0.1"
           }
         },
