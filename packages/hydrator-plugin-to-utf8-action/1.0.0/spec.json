@@ -4,7 +4,7 @@
   "label": "To UTF-8 Action",
   "author": "Cask",
   "org": "Cask Data, Inc.",
-  "cdapVersion": "[4.1.0,10.0.0-SNAPSHOT)",
+  "cdapVersion": "[4.1.0,4.2.0-SNAPSHOT)",
   "license": "license.txt",
   "created": 1492462609,
   "beta": true,
