@@ -1,7 +1,7 @@
 {
   "parents": [
-    "system:cdap-data-pipeline[4.0.0,4.2.0-SNAPSHOT)",
-    "system:cdap-data-streams[4.0.0,4.2.0-SNAPSHOT)"
+    "system:cdap-data-pipeline[4.1.0,4.2.0-SNAPSHOT)",
+    "system:cdap-data-streams[4.1.0,4.2.0-SNAPSHOT)"
   ],
   "properties": {
     "widgets.ToUTF8-action": "{\"metadata\":{\"spec-version\":\"1.4\"},\"configuration-groups\":[{\"label\":\"Configuration Options\",\"properties\":[{\"widget-type\":\"textbox\",\"label\":\"Source Path\",\"name\":\"sourceFilePath\",\"widget-attributes\":{\"placeholder\":\"E.g. /tmp/file.dat or /tmp/folder/\"}},{\"widget-type\":\"textbox\",\"label\":\"Destination Path\",\"name\":\"destFilePath\",\"widget-attributes\":{\"placeholder\":\"E.g. /tmp/file.utf8.dat or /tmp/utf8-folder/\"}},{\"widget-type\":\"textbox\",\"label\":\"File Regular Expression\",\"name\":\"fileRegex\",\"widget-attributes\":{\"placeholder\":\"E.g. .*\\\\.dat\"}},{\"widget-type\":\"textbox\",\"label\":\"Character Set\",\"name\":\"charset\",\"widget-attributes\":{\"placeholder\":\"E.g. ISO-8859-1\"}},{\"widget-type\":\"select\",\"label\":\"Continue Processing If There Are Errors?\",\"name\":\"continueOnError\",\"widget-attributes\":{\"values\":[\"true\",\"false\"],\"default\":\"false\"}}]}],\"outputs\":[]}",
