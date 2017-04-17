@@ -1,0 +1,48 @@
+{
+  "specVersion": "1.0",
+  "description": "An action that will convert one or many files into UTF-8 before further processing.",
+  "label": "To UTF-8 Action",
+  "author": "Cask",
+  "org": "Cask Data, Inc.",
+  "cdapVersion": "[4.1.0,10.0.0-SNAPSHOT)",
+  "license": "license.txt",
+  "created": 1492462609,
+  "beta": true,
+  "categories": [
+    "hydrator-plugin"
+  ],
+  "actions": [
+    {
+      "type": "one_step_deploy_plugin",
+      "label": "Deploy To UTF-8 Plugin",
+      "arguments": [
+        {
+          "name": "name",
+          "value": "to-utf8-action-plugin",
+          "canModify": false
+        },
+        {
+          "name": "version",
+          "value": "1.0.0",
+          "canModify": false
+        },
+        {
+          "name": "scope",
+          "value": "user",
+          "canModify": false
+        },
+        {
+          "name": "config",
+          "value": "to-utf8-action-plugin-1.0.0.json",
+          "canModify": false
+        },
+        {
+          "name": "jar",
+          "value": "to-utf8-action-plugin-1.0.0.jar",
+          "canModify": false
+        }
+      ]
+    }
+  ]
+}
+
