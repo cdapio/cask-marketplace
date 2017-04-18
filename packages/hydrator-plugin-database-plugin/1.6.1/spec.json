@@ -5,7 +5,6 @@
   "author": "Cask",
   "org": "Cask Data, Inc.",
   "cdapVersion": "[4.1.0-SNAPSHOT,4.1.0]",
-  "license": "license.txt",
   "created": 1490842193,
   "categories": [
     "EDW Offloading",

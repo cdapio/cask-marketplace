@@ -5,7 +5,6 @@
   "author": "Cask",
   "org": "Cask Data, Inc.",
   "cdapVersion": "[4.1.0,4.2.0-SNAPSHOT)",
-  "license": "license.txt",
   "created": 1490830844,
   "beta": true,
   "categories": [
