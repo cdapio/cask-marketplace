@@ -1,9 +1,9 @@
 {
   "parents": [
-    "system:cdap-etl-batch[4.1.0,4.2.0)",
-    "system:cdap-etl-realtime[4.1.0,4.2.0)",
-    "system:cdap-data-pipeline[4.1.0,4.2.0)",
-    "system:cdap-data-streams[4.1.0,4.2.0)"
+    "system:cdap-etl-batch[4.1.0,4.3.0)",
+    "system:cdap-etl-realtime[4.1.0,4.3.0)",
+    "system:cdap-data-pipeline[4.1.0,4.3.0)",
+    "system:cdap-data-streams[4.1.0,4.3.0)"
   ],
   "properties": {
     "widgets.PDFExtractor-transform": "{\"metadata\":{\"spec-version\":\"1.4\"},\"configuration-groups\":[{\"label\":\"Configuration Options\",\"properties\":[{\"widget-type\":\"input-field-selector\",\"label\":\"Source Field\",\"name\":\"sourceFieldName\"},{\"widget-type\":\"select\",\"label\":\"Continue Processing If There Are Errors?\",\"name\":\"continueOnError\",\"widget-attributes\":{\"values\":[\"true\",\"false\"],\"default\":\"false\"}}]}],\"outputs\":[{\"name\":\"schema\",\"widget-type\":\"non-editable-schema-editor\",\"schema\":{\"name\":\"etlSchemaBody\",\"type\":\"record\",\"fields\":[{\"name\":\"raw_pdf_data\",\"type\":[\"bytes\",\"null\"]},{\"name\":\"text\",\"type\":[\"string\",\"null\"]},{\"name\":\"page_count\",\"type\":[\"int\",\"null\"]},{\"name\":\"title\",\"type\":[\"string\",\"null\"]},{\"name\":\"author\",\"type\":[\"string\",\"null\"]},{\"name\":\"subject\",\"type\":[\"string\",\"null\"]},{\"name\":\"keywords\",\"type\":[\"string\",\"null\"]},{\"name\":\"creator\",\"type\":[\"string\",\"null\"]},{\"name\":\"producer\",\"type\":[\"string\",\"null\"]},{\"name\":\"creation_date\",\"type\":[\"long\",\"null\"]},{\"name\":\"modification_date\",\"type\":[\"long\",\"null\"]},{\"name\":\"trapped\",\"type\":[\"string\",\"null\"]}]}}]}",
