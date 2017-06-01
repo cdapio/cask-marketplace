@@ -5,7 +5,7 @@
   "author": "Cask",
   "org": "Cask Data, Inc.",
   "created": 1496273781,
-  "cdapVersion": "[4.1.0,4.2.0)",
+  "cdapVersion": "[4.1.0,4.3.0)",
   "beta": true,
   "categories": [
     "hydrator-plugin"
