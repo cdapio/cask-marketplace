@@ -1,0 +1,24 @@
+{
+  "specVersion": "1.0",
+  "label": "Cask Cellar",
+  "description": "Cellar: where you store casks. This is a cloud storage application that can be used to upload, browse, and search for files.",
+  "author": "Cask",
+  "org": "Cask Data, Inc.",
+  "created": 1496270593,
+  "categories": [ "usecase" ],
+  "cdapVersion": "[4.2.0-SNAPSHOT, 4.3.0)",
+  "beta": true,
+  "license": "license.txt",
+  "actions": [
+    {
+      "type": "one_step_deploy_app",
+      "label": "Deploy App",
+      "arguments": [
+        {
+          "name": "jar",
+          "value": "cellar-1.1.0.jar"
+        }
+      ]
+    }
+  ]
+}

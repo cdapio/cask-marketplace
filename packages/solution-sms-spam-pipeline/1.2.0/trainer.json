@@ -1,0 +1,153 @@
+{
+  "resources": {
+    "memoryMB": 1024,
+    "virtualCores": 1
+  },
+  "driverResources": {
+    "memoryMB": 1024,
+    "virtualCores": 1
+  },
+  "schedule": "0 * * * *",
+  "connections": [
+    {
+      "from": "Stream",
+      "to": "Projection"
+    },
+    {
+      "from": "Projection",
+      "to": "JavaScript"
+    },
+    {
+      "from": "JavaScript",
+      "to": "NaiveBayesTrainer"
+    }
+  ],
+  "stages": [
+    {
+      "name": "Stream",
+      "plugin": {
+        "name": "Stream",
+        "type": "batchsource",
+        "label": "Stream",
+        "artifact": {
+          "name": "core-plugins",
+          "version": "[1.7.0-SNAPSHOT, 1.8.0)",
+          "scope": "SYSTEM"
+        },
+        "properties": {
+          "schema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"label\",\"type\":\"string\"},{\"name\":\"message\",\"type\":\"string\"}]}",
+          "format": "tsv",
+          "name": "labeledSMSTexts",
+          "duration": "7d"
+        }
+      },
+      "outputSchema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"label\",\"type\":\"string\"},{\"name\":\"message\",\"type\":\"string\"}]}",
+      "type": "batchsource",
+      "label": "Stream",
+      "icon": "icon-streams",
+      "_uiPosition": {
+        "top": "331.5px",
+        "left": "220.5px"
+      },
+      "$$hashKey": "object:36017"
+    },
+    {
+      "name": "Projection",
+      "plugin": {
+        "name": "Projection",
+        "type": "transform",
+        "label": "Projection",
+        "artifact": {
+          "name": "core-plugins",
+          "version": "[1.7.0-SNAPSHOT, 1.8.0)",
+          "scope": "SYSTEM"
+        },
+        "properties": {
+          "drop": "ts,headers"
+        }
+      },
+      "outputSchema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"label\",\"type\":\"string\"},{\"name\":\"message\",\"type\":\"string\"}]}",
+      "inputSchema": [
+        {
+          "name": "Stream",
+          "schema": "{\"name\":\"etlSchemaBody\",\"type\":\"record\",\"fields\":[{\"name\":\"ts\",\"type\":\"long\"},{\"name\":\"headers\",\"type\":{\"type\":\"map\",\"keys\":\"string\",\"values\":\"string\"}},{\"name\":\"label\",\"type\":\"string\"},{\"name\":\"message\",\"type\":\"string\"}]}"
+        }
+      ],
+      "type": "transform",
+      "label": "Projection",
+      "icon": "icon-projection",
+      "_uiPosition": {
+        "top": "331.5px",
+        "left": "520.5px"
+      },
+      "$$hashKey": "object:36018"
+    },
+    {
+      "name": "JavaScript",
+      "plugin": {
+        "name": "JavaScript",
+        "type": "transform",
+        "label": "JavaScript",
+        "artifact": {
+          "name": "core-plugins",
+          "version": "[1.7.0-SNAPSHOT, 1.8.0)",
+          "scope": "SYSTEM"
+        },
+        "properties": {
+          "script": "function transform(input, emitter, context) {\n  input['isSpam'] = input['label'] === 'ham' ? 0.0 : 1.0;\n  emitter.emit(input);\n}",
+          "schema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"label\",\"type\":\"string\"},{\"name\":\"message\",\"type\":\"string\"},{\"name\":\"isSpam\",\"type\":\"double\"}]}"
+        }
+      },
+      "outputSchema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"label\",\"type\":\"string\"},{\"name\":\"message\",\"type\":\"string\"},{\"name\":\"isSpam\",\"type\":\"double\"}]}",
+      "inputSchema": [
+        {
+          "name": "Projection",
+          "schema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"label\",\"type\":\"string\"},{\"name\":\"message\",\"type\":\"string\"}]}"
+        }
+      ],
+      "type": "transform",
+      "label": "JavaScript",
+      "icon": "icon-javascript",
+      "_uiPosition": {
+        "top": "331.5px",
+        "left": "820.5px"
+      },
+      "$$hashKey": "object:36019"
+    },
+    {
+      "name": "NaiveBayesTrainer",
+      "plugin": {
+        "name": "NaiveBayesTrainer",
+        "type": "sparksink",
+        "label": "NaiveBayesTrainer",
+        "artifact": {
+          "name": "naive-bayes-analytics-plugin",
+          "version": "[1.0.0, 1.1.0)",
+          "scope": "USER"
+        },
+        "properties": {
+          "fileSetName": "smsSpamModel",
+          "path": "naiveBayesA",
+          "fieldToClassify": "message",
+          "predictionField": "isSpam",
+          "numFeatures": "1000000"
+        }
+      },
+      "outputSchema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"label\",\"type\":\"string\"},{\"name\":\"message\",\"type\":\"string\"},{\"name\":\"isSpam\",\"type\":\"double\"}]}",
+      "inputSchema": [
+        {
+          "name": "JavaScript",
+          "schema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"label\",\"type\":\"string\"},{\"name\":\"message\",\"type\":\"string\"},{\"name\":\"isSpam\",\"type\":\"double\"}]}"
+        }
+      ],
+      "type": "sparksink",
+      "label": "NaiveBayesTrainer",
+      "icon": "icon-naivebayestrainer",
+      "_uiPosition": {
+        "top": "331.5px",
+        "left": "1120.5px"
+      },
+      "$$hashKey": "object:36020"
+    }
+  ]
+}

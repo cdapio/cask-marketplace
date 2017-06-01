@@ -1,0 +1,15 @@
+{
+  "parents": [
+    "system:cdap-data-pipeline[3.0.0,10.0.0]",
+    "system:cdap-data-streams[3.0.0,10.0.0]",
+    "system:cdap-etl-batch[3.0.0,10.0.0]"
+  ],
+  "plugins": [
+    {
+      "name" : "netezza",
+      "type" : "jdbc",
+      "className" : "org.netezza.Driver",
+      "description" : "Plugin for the Netezza 7.2.1 JDBC Driver"
+    }
+  ]
+}

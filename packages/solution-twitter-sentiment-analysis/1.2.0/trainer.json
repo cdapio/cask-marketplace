@@ -1,0 +1,85 @@
+{
+  "resources": {
+    "memoryMB": 2048,
+    "virtualCores": 1
+  },
+  "driverResources": {
+    "memoryMB": 1024,
+    "virtualCores": 1
+  },
+  "schedule": "0 0 1 * *",
+  "connections": [
+    {
+      "from": "Stream",
+      "to": "Train Model"
+    }
+  ],
+  "comments": [],
+  "postActions": [],
+  "engine": "mapreduce",
+  "stages": [
+    {
+      "name": "Stream",
+      "plugin": {
+        "name": "Stream",
+        "type": "batchsource",
+        "label": "Stream",
+        "artifact": {
+          "name": "core-plugins",
+          "version": "[1.7.0-SNAPSHOT, 1.8.0)",
+          "scope": "SYSTEM"
+        },
+        "properties": {
+          "schema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"score\",\"type\":\"double\"},{\"name\":\"id\",\"type\":\"string\"},{\"name\":\"date\",\"type\":\"string\"},{\"name\":\"query\",\"type\":\"string\"},{\"name\":\"handle\",\"type\":\"string\"},{\"name\":\"tweet\",\"type\":\"string\"}]}",
+          "format": "tsv",
+          "name": "labeledTweets",
+          "duration": "1d"
+        }
+      },
+      "outputSchema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"score\",\"type\":\"double\"},{\"name\":\"id\",\"type\":\"string\"},{\"name\":\"date\",\"type\":\"string\"},{\"name\":\"query\",\"type\":\"string\"},{\"name\":\"handle\",\"type\":\"string\"},{\"name\":\"tweet\",\"type\":\"string\"}]}",
+      "type": "batchsource",
+      "label": "Stream",
+      "icon": "icon-streams",
+      "_uiPosition": {
+        "top": "297px",
+        "left": "498.5px"
+      },
+      "$$hashKey": "object:228"
+    },
+    {
+      "name": "Train Model",
+      "plugin": {
+        "name": "NaiveBayesTrainer",
+        "type": "sparksink",
+        "label": "Train Model",
+        "artifact": {
+          "name": "naive-bayes-analytics-plugin",
+          "version": "[1.0.0, 1.1.0)",
+          "scope": "USER"
+        },
+        "properties": {
+          "fileSetName": "tweetSentimentModel",
+          "path": "model1",
+          "fieldToClassify": "tweet",
+          "predictionField": "score",
+          "numFeatures": "1000000"
+        }
+      },
+      "outputSchema": "{\"name\":\"etlSchemaBody\",\"type\":\"record\",\"fields\":[{\"name\":\"ts\",\"type\":\"long\"},{\"name\":\"headers\",\"type\":{\"type\":\"map\",\"keys\":\"string\",\"values\":\"string\"}},{\"name\":\"score\",\"type\":\"double\"},{\"name\":\"id\",\"type\":\"string\"},{\"name\":\"date\",\"type\":\"string\"},{\"name\":\"query\",\"type\":\"string\"},{\"name\":\"handle\",\"type\":\"string\"},{\"name\":\"tweet\",\"type\":\"string\"}]}",
+      "inputSchema": [
+        {
+          "name": "Stream",
+          "schema": "{\"name\":\"etlSchemaBody\",\"type\":\"record\",\"fields\":[{\"name\":\"ts\",\"type\":\"long\"},{\"name\":\"headers\",\"type\":{\"type\":\"map\",\"keys\":\"string\",\"values\":\"string\"}},{\"name\":\"score\",\"type\":\"double\"},{\"name\":\"id\",\"type\":\"string\"},{\"name\":\"date\",\"type\":\"string\"},{\"name\":\"query\",\"type\":\"string\"},{\"name\":\"handle\",\"type\":\"string\"},{\"name\":\"tweet\",\"type\":\"string\"}]}"
+        }
+      ],
+      "type": "sparksink",
+      "label": "Train Model",
+      "icon": "icon-naivebayestrainer",
+      "_uiPosition": {
+        "top": "297px",
+        "left": "798.5px"
+      },
+      "$$hashKey": "object:229"
+    }
+  ]
+}

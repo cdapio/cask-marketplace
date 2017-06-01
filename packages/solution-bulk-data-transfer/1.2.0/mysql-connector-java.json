@@ -1,0 +1,15 @@
+{
+  "parents": [
+    "cdap-data-pipeline[3.0.0,10.0.0]",
+    "cdap-data-streams[3.0.0,10.0.0]",
+    "cdap-etl-batch[3.0.0,10.0.0]"
+  ],
+  "plugins": [
+    {
+      "name" : "mysql",
+      "type" : "jdbc",
+      "className" : "com.mysql.jdbc.Driver",
+      "description" : "Plugin for the MySQL JDBC driver"
+    }
+  ]
+}

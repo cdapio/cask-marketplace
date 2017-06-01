@@ -1,0 +1,299 @@
+{
+  "resources": {
+    "memoryMB": 2048,
+    "virtualCores": 1
+  },
+  "driverResources": {
+    "memoryMB": 1024,
+    "virtualCores": 1
+  },
+  "schedule": "0 0 1 * *",
+  "connections": [
+    {
+      "from": "Stream",
+      "to": "Labeler"
+    },
+    {
+      "from": "Labeler",
+      "to": "Negative"
+    },
+    {
+      "from": "Negative",
+      "to": "Negative Store"
+    },
+    {
+      "from": "Labeler",
+      "to": "Neutral"
+    },
+    {
+      "from": "Labeler",
+      "to": "Positive"
+    },
+    {
+      "from": "Neutral",
+      "to": "Neutral Store"
+    },
+    {
+      "from": "Positive",
+      "to": "Positive Store"
+    }
+  ],
+  "comments": [],
+  "postActions": [],
+  "engine": "mapreduce",
+  "stages": [
+    {
+      "name": "Stream",
+      "plugin": {
+        "name": "Stream",
+        "type": "batchsource",
+        "label": "Stream",
+        "artifact": {
+          "name": "core-plugins",
+          "version": "[1.7.0-SNAPSHOT, 1.8.0)",
+          "scope": "SYSTEM"
+        },
+        "properties": {
+          "schema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"tweet\",\"type\":\"string\"}]}",
+          "format": "text",
+          "name": "rawTweets",
+          "duration": "1d"
+        }
+      },
+      "outputSchema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"tweet\",\"type\":\"string\"}]}",
+      "type": "batchsource",
+      "label": "Stream",
+      "icon": "icon-streams",
+      "_uiPosition": {
+        "top": "297px",
+        "left": "198.5px"
+      },
+      "$$hashKey": "object:9319"
+    },
+    {
+      "name": "Labeler",
+      "plugin": {
+        "name": "NaiveBayesClassifier",
+        "type": "sparkcompute",
+        "label": "Labeler",
+        "artifact": {
+          "name": "naive-bayes-analytics-plugin",
+          "version": "[1.0.0, 1.1.0)",
+          "scope": "USER"
+        },
+        "properties": {
+          "predictionField": "prediction",
+          "fieldToClassify": "tweet",
+          "fileSetName": "tweetSentimentModel",
+          "path": "model1",
+          "numFeatures": "1000000"
+        }
+      },
+      "outputSchema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"ts\",\"type\":\"long\"},{\"name\":\"headers\",\"type\":{\"type\":\"map\",\"keys\":\"string\",\"values\":\"string\"}},{\"name\":\"tweet\",\"type\":\"string\"},{\"name\":\"prediction\",\"type\":\"double\"}]}",
+      "inputSchema": [
+        {
+          "name": "Stream",
+          "schema": "{\"name\":\"etlSchemaBody\",\"type\":\"record\",\"fields\":[{\"name\":\"ts\",\"type\":\"long\"},{\"name\":\"headers\",\"type\":{\"type\":\"map\",\"keys\":\"string\",\"values\":\"string\"}},{\"name\":\"tweet\",\"type\":\"string\"}]}"
+        }
+      ],
+      "type": "sparkcompute",
+      "label": "Labeler",
+      "icon": "icon-naivebayesclassifier",
+      "_uiPosition": {
+        "top": "297px",
+        "left": "498.5px"
+      },
+      "$$hashKey": "object:9320"
+    },
+    {
+      "name": "Negative",
+      "plugin": {
+        "name": "JavaScript",
+        "type": "transform",
+        "label": "Negative",
+        "artifact": {
+          "name": "core-plugins",
+          "version": "[1.7.0-SNAPSHOT, 1.8.0)",
+          "scope": "SYSTEM"
+        },
+        "properties": {
+          "script": "function transform(input, emitter, context) {\n    if (input.prediction < 2.0) {\n        emitter.emit(input);\n    }\n}",
+          "schema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"ts\",\"type\":\"long\"},{\"name\":\"headers\",\"type\":{\"type\":\"map\",\"keys\":\"string\",\"values\":\"string\"}},{\"name\":\"tweet\",\"type\":\"string\"},{\"name\":\"prediction\",\"type\":\"double\"}]}"
+        }
+      },
+      "outputSchema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"ts\",\"type\":\"long\"},{\"name\":\"headers\",\"type\":{\"type\":\"map\",\"keys\":\"string\",\"values\":\"string\"}},{\"name\":\"tweet\",\"type\":\"string\"},{\"name\":\"prediction\",\"type\":\"double\"}]}",
+      "inputSchema": [
+        {
+          "name": "Labeler",
+          "schema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"ts\",\"type\":\"long\"},{\"name\":\"headers\",\"type\":{\"type\":\"map\",\"keys\":\"string\",\"values\":\"string\"}},{\"name\":\"tweet\",\"type\":\"string\"},{\"name\":\"prediction\",\"type\":\"double\"}]}"
+        }
+      ],
+      "type": "transform",
+      "label": "Negative",
+      "icon": "icon-javascript",
+      "_uiPosition": {
+        "top": "107px",
+        "left": "798.5px"
+      },
+      "$$hashKey": "object:9321"
+    },
+    {
+      "name": "Negative Store",
+      "plugin": {
+        "name": "TPFSAvro",
+        "type": "batchsink",
+        "label": "Negative Store",
+        "artifact": {
+          "name": "core-plugins",
+          "version": "[1.7.0-SNAPSHOT, 1.8.0)",
+          "scope": "SYSTEM"
+        },
+        "properties": {
+          "schema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"ts\",\"type\":\"long\"},{\"name\":\"headers\",\"type\":{\"type\":\"map\",\"keys\":\"string\",\"values\":\"string\"}},{\"name\":\"tweet\",\"type\":\"string\"},{\"name\":\"prediction\",\"type\":\"double\"}]}",
+          "cleanPartitionsOlderThan": "180d",
+          "name": "negativeTweets"
+        }
+      },
+      "outputSchema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"ts\",\"type\":\"long\"},{\"name\":\"headers\",\"type\":{\"type\":\"map\",\"keys\":\"string\",\"values\":\"string\"}},{\"name\":\"tweet\",\"type\":\"string\"},{\"name\":\"prediction\",\"type\":\"double\"}]}",
+      "inputSchema": [
+        {
+          "name": "Negative",
+          "schema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"ts\",\"type\":\"long\"},{\"name\":\"headers\",\"type\":{\"type\":\"map\",\"keys\":\"string\",\"values\":\"string\"}},{\"name\":\"tweet\",\"type\":\"string\"},{\"name\":\"prediction\",\"type\":\"double\"}]}"
+        }
+      ],
+      "type": "batchsink",
+      "label": "Negative Store",
+      "icon": "icon-tpfsavro",
+      "_uiPosition": {
+        "top": "107px",
+        "left": "1098.5px"
+      },
+      "$$hashKey": "object:9322"
+    },
+    {
+      "name": "Neutral",
+      "plugin": {
+        "name": "JavaScript",
+        "type": "transform",
+        "label": "Neutral",
+        "artifact": {
+          "name": "core-plugins",
+          "version": "[1.7.0-SNAPSHOT, 1.8.0)",
+          "scope": "SYSTEM"
+        },
+        "properties": {
+          "script": "function transform(input, emitter, context) {\n    if (input.prediction == 2.0) {\n        emitter.emit(input);\n    }\n}",
+          "schema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"ts\",\"type\":\"long\"},{\"name\":\"headers\",\"type\":{\"type\":\"map\",\"keys\":\"string\",\"values\":\"string\"}},{\"name\":\"tweet\",\"type\":\"string\"},{\"name\":\"prediction\",\"type\":\"double\"}]}"
+        }
+      },
+      "outputSchema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"ts\",\"type\":\"long\"},{\"name\":\"headers\",\"type\":{\"type\":\"map\",\"keys\":\"string\",\"values\":\"string\"}},{\"name\":\"tweet\",\"type\":\"string\"},{\"name\":\"prediction\",\"type\":\"double\"}]}",
+      "inputSchema": [
+        {
+          "name": "Labeler",
+          "schema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"ts\",\"type\":\"long\"},{\"name\":\"headers\",\"type\":{\"type\":\"map\",\"keys\":\"string\",\"values\":\"string\"}},{\"name\":\"tweet\",\"type\":\"string\"},{\"name\":\"prediction\",\"type\":\"double\"}]}"
+        }
+      ],
+      "type": "transform",
+      "label": "Neutral",
+      "icon": "icon-javascript",
+      "_uiPosition": {
+        "top": "297px",
+        "left": "798.5px"
+      },
+      "$$hashKey": "object:9323"
+    },
+    {
+      "name": "Positive",
+      "plugin": {
+        "name": "JavaScript",
+        "type": "transform",
+        "label": "Positive",
+        "artifact": {
+          "name": "core-plugins",
+          "version": "[1.7.0-SNAPSHOT, 1.8.0)",
+          "scope": "SYSTEM"
+        },
+        "properties": {
+          "script": "function transform(input, emitter, context) {\n    if (input.prediction > 2.0) {\n        emitter.emit(input);\n    }\n}",
+          "schema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"ts\",\"type\":\"long\"},{\"name\":\"headers\",\"type\":{\"type\":\"map\",\"keys\":\"string\",\"values\":\"string\"}},{\"name\":\"tweet\",\"type\":\"string\"},{\"name\":\"prediction\",\"type\":\"double\"}]}"
+        }
+      },
+      "outputSchema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"ts\",\"type\":\"long\"},{\"name\":\"headers\",\"type\":{\"type\":\"map\",\"keys\":\"string\",\"values\":\"string\"}},{\"name\":\"tweet\",\"type\":\"string\"},{\"name\":\"prediction\",\"type\":\"double\"}]}",
+      "inputSchema": [
+        {
+          "name": "Labeler",
+          "schema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"ts\",\"type\":\"long\"},{\"name\":\"headers\",\"type\":{\"type\":\"map\",\"keys\":\"string\",\"values\":\"string\"}},{\"name\":\"tweet\",\"type\":\"string\"},{\"name\":\"prediction\",\"type\":\"double\"}]}"
+        }
+      ],
+      "type": "transform",
+      "label": "Positive",
+      "icon": "icon-javascript",
+      "_uiPosition": {
+        "top": "487px",
+        "left": "798.5px"
+      },
+      "$$hashKey": "object:9324"
+    },
+    {
+      "name": "Neutral Store",
+      "plugin": {
+        "name": "TPFSAvro",
+        "type": "batchsink",
+        "label": "Neutral Store",
+        "artifact": {
+          "name": "core-plugins",
+          "version": "[1.7.0-SNAPSHOT, 1.8.0)",
+          "scope": "SYSTEM"
+        },
+        "properties": {
+          "schema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"ts\",\"type\":\"long\"},{\"name\":\"headers\",\"type\":{\"type\":\"map\",\"keys\":\"string\",\"values\":\"string\"}},{\"name\":\"tweet\",\"type\":\"string\"},{\"name\":\"prediction\",\"type\":\"double\"}]}",
+          "name": "neutralTweets",
+          "cleanPartitionsOlderThan": "180d"
+        }
+      },
+      "outputSchema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"ts\",\"type\":\"long\"},{\"name\":\"headers\",\"type\":{\"type\":\"map\",\"keys\":\"string\",\"values\":\"string\"}},{\"name\":\"tweet\",\"type\":\"string\"},{\"name\":\"prediction\",\"type\":\"double\"}]}",
+      "inputSchema": [
+        {
+          "name": "Neutral",
+          "schema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"ts\",\"type\":\"long\"},{\"name\":\"headers\",\"type\":{\"type\":\"map\",\"keys\":\"string\",\"values\":\"string\"}},{\"name\":\"tweet\",\"type\":\"string\"},{\"name\":\"prediction\",\"type\":\"double\"}]}"
+        }
+      ],
+      "type": "batchsink",
+      "label": "Neutral Store",
+      "icon": "icon-tpfsavro",
+      "_uiPosition": {
+        "top": "297px",
+        "left": "1098.5px"
+      },
+      "$$hashKey": "object:9325"
+    },
+    {
+      "name": "Positive Store",
+      "plugin": {
+        "name": "TPFSAvro",
+        "type": "batchsink",
+        "label": "Positive Store",
+        "artifact": {
+          "name": "core-plugins",
+          "version": "[1.7.0-SNAPSHOT, 1.8.0)",
+          "scope": "SYSTEM"
+        },
+        "properties": {
+          "schema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"ts\",\"type\":\"long\"},{\"name\":\"headers\",\"type\":{\"type\":\"map\",\"keys\":\"string\",\"values\":\"string\"}},{\"name\":\"tweet\",\"type\":\"string\"},{\"name\":\"prediction\",\"type\":\"double\"}]}",
+          "name": "positiveTweets",
+          "cleanPartitionsOlderThan": "180d"
+        }
+      },
+      "outputSchema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"ts\",\"type\":\"long\"},{\"name\":\"headers\",\"type\":{\"type\":\"map\",\"keys\":\"string\",\"values\":\"string\"}},{\"name\":\"tweet\",\"type\":\"string\"},{\"name\":\"prediction\",\"type\":\"double\"}]}",
+      "inputSchema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"ts\",\"type\":\"long\"},{\"name\":\"headers\",\"type\":{\"type\":\"map\",\"keys\":\"string\",\"values\":\"string\"}},{\"name\":\"tweet\",\"type\":\"string\"},{\"name\":\"prediction\",\"type\":\"double\"}]}",
+      "type": "batchsink",
+      "label": "Positive Store",
+      "icon": "icon-tpfsavro",
+      "_uiPosition": {
+        "top": "487px",
+        "left": "1098.5px"
+      },
+      "$$hashKey": "object:9326"
+    }
+  ]
+}

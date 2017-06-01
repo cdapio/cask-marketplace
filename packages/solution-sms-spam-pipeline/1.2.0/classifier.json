@@ -1,0 +1,153 @@
+{
+  "resources": {
+    "memoryMB": 1024,
+    "virtualCores": 1
+  },
+  "driverResources": {
+    "memoryMB": 1024,
+    "virtualCores": 1
+  },
+  "schedule": "0 * * * *",
+  "connections": [
+    {
+      "from": "Stream",
+      "to": "NaiveBayesClassifier"
+    },
+    {
+      "from": "NaiveBayesClassifier",
+      "to": "Formatter"
+    },
+    {
+      "from": "Formatter",
+      "to": "TPFSAvro"
+    }
+  ],
+  "comments": [],
+  "postActions": [],
+  "engine": "mapreduce",
+  "stages": [
+    {
+      "name": "Stream",
+      "plugin": {
+        "name": "Stream",
+        "type": "batchsource",
+        "label": "Stream",
+        "artifact": {
+          "name": "core-plugins",
+          "version": "[1.7.0-SNAPSHOT, 1.8.0)",
+          "scope": "SYSTEM"
+        },
+        "properties": {
+          "schema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"message\",\"type\":\"string\"}]}",
+          "format": "text",
+          "name": "smsTexts",
+          "duration": "1d"
+        }
+      },
+      "outputSchema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"message\",\"type\":\"string\"}]}",
+      "type": "batchsource",
+      "label": "Stream",
+      "icon": "icon-streams",
+      "_uiPosition": {
+        "top": "331.5px",
+        "left": "220.5px"
+      },
+      "$$hashKey": "object:36227"
+    },
+    {
+      "name": "NaiveBayesClassifier",
+      "plugin": {
+        "name": "NaiveBayesClassifier",
+        "type": "sparkcompute",
+        "label": "NaiveBayesClassifier",
+        "artifact": {
+          "name": "naive-bayes-analytics-plugin",
+          "version": "[1.0.0, 1.1.0)",
+          "scope": "USER"
+        },
+        "properties": {
+          "fileSetName": "smsSpamModel",
+          "path": "naiveBayesA",
+          "fieldToClassify": "message",
+          "predictionField": "prediction",
+          "numFeatures": "1000000"
+        }
+      },
+      "outputSchema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"ts\",\"type\":\"long\"},{\"name\":\"headers\",\"type\":{\"type\":\"map\",\"keys\":\"string\",\"values\":\"string\"}},{\"name\":\"message\",\"type\":\"string\"},{\"name\":\"prediction\",\"type\":\"double\"}]}",
+      "inputSchema": [
+        {
+          "name": "Stream",
+          "schema": "{\"name\":\"etlSchemaBody\",\"type\":\"record\",\"fields\":[{\"name\":\"ts\",\"type\":\"long\"},{\"name\":\"headers\",\"type\":{\"type\":\"map\",\"keys\":\"string\",\"values\":\"string\"}},{\"name\":\"message\",\"type\":\"string\"}]}"
+        }
+      ],
+      "type": "sparkcompute",
+      "label": "NaiveBayesClassifier",
+      "icon": "icon-naivebayesclassifier",
+      "_uiPosition": {
+        "top": "331.5px",
+        "left": "520.5px"
+      },
+      "$$hashKey": "object:36228"
+    },
+    {
+      "name": "Formatter",
+      "plugin": {
+        "name": "JavaScript",
+        "type": "transform",
+        "label": "Formatter",
+        "artifact": {
+          "name": "core-plugins",
+          "version": "[1.7.0-SNAPSHOT, 1.8.0)",
+          "scope": "SYSTEM"
+        },
+        "properties": {
+          "script": "function transform(input, emitter, context) {\n  emitter.emit({\n    'ts': input['ts'],\n    'message': input['message'],\n    'isSpam': input['prediction'] === 1.0\n  });\n}",
+          "schema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"ts\",\"type\":\"long\"},{\"name\":\"message\",\"type\":\"string\"},{\"name\":\"isSpam\",\"type\":\"boolean\"}]}"
+        }
+      },
+      "outputSchema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"ts\",\"type\":\"long\"},{\"name\":\"message\",\"type\":\"string\"},{\"name\":\"isSpam\",\"type\":\"boolean\"}]}",
+      "inputSchema": [
+        {
+          "name": "NaiveBayesClassifier",
+          "schema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"ts\",\"type\":\"long\"},{\"name\":\"headers\",\"type\":{\"type\":\"map\",\"keys\":\"string\",\"values\":\"string\"}},{\"name\":\"message\",\"type\":\"string\"},{\"name\":\"prediction\",\"type\":\"double\"}]}"
+        }
+      ],
+      "type": "transform",
+      "label": "Formatter",
+      "icon": "icon-javascript",
+      "_uiPosition": {
+        "top": "331.5px",
+        "left": "820.5px"
+      },
+      "$$hashKey": "object:36229"
+    },
+    {
+      "name": "TPFSAvro",
+      "plugin": {
+        "name": "TPFSAvro",
+        "type": "batchsink",
+        "label": "TPFSAvro",
+        "artifact": {
+          "name": "core-plugins",
+          "version": "[1.7.0-SNAPSHOT, 1.8.0)",
+          "scope": "SYSTEM"
+        },
+        "properties": {
+          "schema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"ts\",\"type\":\"long\"},{\"name\":\"message\",\"type\":\"string\"},{\"name\":\"isSpam\",\"type\":\"boolean\"}]}",
+          "name": "classifiedTexts",
+          "cleanPartitionsOlderThan": "60d"
+        }
+      },
+      "outputSchema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"ts\",\"type\":\"long\"},{\"name\":\"message\",\"type\":\"string\"},{\"name\":\"isSpam\",\"type\":\"boolean\"}]}",
+      "inputSchema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"ts\",\"type\":\"long\"},{\"name\":\"message\",\"type\":\"string\"},{\"name\":\"isSpam\",\"type\":\"boolean\"}]}",
+      "type": "batchsink",
+      "label": "TPFSAvro",
+      "icon": "icon-tpfsavro",
+      "_uiPosition": {
+        "top": "331.5px",
+        "left": "1120.5px"
+      },
+      "$$hashKey": "object:36230"
+    }
+  ]
+}
