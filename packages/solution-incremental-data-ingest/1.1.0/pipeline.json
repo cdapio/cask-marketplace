@@ -61,7 +61,7 @@
         "label": "HDFSSource",
         "artifact": {
           "name": "core-plugins",
-          "version": "[1.6.1, 1.7.0)",
+          "version": "[1.7.0-SNAPSHOT, 1.8.0)",
           "scope": "SYSTEM"
         },
         "properties": {
@@ -97,7 +97,7 @@
         "label": "Merge",
         "artifact": {
           "name": "core-plugins",
-          "version": "[1.6.1, 1.7.0)",
+          "version": "[1.7.0-SNAPSHOT, 1.8.0)",
           "scope": "SYSTEM"
         },
         "properties": {
@@ -151,7 +151,7 @@
         "label": "GenerateState",
         "artifact": {
           "name": "core-plugins",
-          "version": "[1.6.1. 1.7.0)",
+          "version": "[1.7.0-SNAPSHOT, 1.8.0),
           "scope": "SYSTEM"
         },
         "properties": {
@@ -168,7 +168,7 @@
         "label": "StateStore",
         "artifact": {
           "name": "core-plugins",
-          "version": "[1.6.1, 1.7.0)",
+          "version": "[1.7.0-SNAPSHOT, 1.8.0)",
           "scope": "SYSTEM"
         },
         "properties": {
@@ -204,7 +204,7 @@
         "label": "DBSource",
         "artifact": {
           "name": "database-plugins",
-          "version": "[1.6.1, 1.7.0)",
+          "version": "[1.7.0-SNAPSHOT, 1.8.0)",
           "scope": "SYSTEM"
         },
         "properties": {
@@ -248,7 +248,7 @@
         "label": "HDFSMergedSink",
         "artifact": {
           "name": "core-plugins",
-          "version": "[1.6.1, 1.7.0)",
+          "version": "[1.7.0-SNAPSHOT, 1.8.0)",
           "scope": "SYSTEM"
         },
         "properties": {

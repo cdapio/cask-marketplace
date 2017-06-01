@@ -1,8 +1,8 @@
 {
   "parents": [
-    "system:cdap-etl-batch[4.1.0,4.2.0-SNAPSHOT)",
-    "system:cdap-data-pipeline[4.1.0,4.2.0-SNAPSHOT)",
-    "system:cdap-data-streams[4.1.0,4.2.0-SNAPSHOT)"
+    "system:cdap-etl-batch[4.1.0,4.3.0)",
+    "system:cdap-data-pipeline[4.1.0,4.3.0)",
+    "system:cdap-data-streams[4.1.0,4.3.0)"
   ],
   "properties": {
     "widgets.TopN-batchaggregator": "{\"metadata\":{\"spec-version\":\"1.0\",\"label\":\"TopN Aggregator\"},\"configuration-groups\":[{\"label\":\"Top-N Configuration\",\"properties\":[{\"widget-type\":\"input-field-selector\",\"label\":\"Top Field\",\"name\":\"field\",\"description\":\"The field by which top results are sorted on.\"},{\"widget-type\":\"number\",\"label\":\"Results Number\",\"name\":\"size\",\"description\":\"The maximum number of top records sorted by 'field' in result (DEFAULT: 1)\",\"widget-attributes\":{\"default\":1}},{\"widget-type\":\"select\",\"label\":\"Ignore NULL Field\",\"name\":\"ignoreNull\",\"description\":\"Set to 'true' to ignore records with null value in the field to sort by (DEFAULT : false)\",\"widget-attributes\":{\"values\":[\"true\",\"false\"],\"default\":\"false\"}}]}],\"outputs\":[]}",
