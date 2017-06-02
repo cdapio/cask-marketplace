@@ -6,7 +6,7 @@
   "org": "Cask Data, Inc.",
   "created": 1488230782,
   "categories": [ "usecase" ],
-  "cdapVersion": "[4.1.0-SNAPSHOT,4.2.0-SNAPSHOT)",
+  "cdapVersion": "[4.1.0-SNAPSHOT,4.3.0)",
   "beta": true,
   "license": "license.txt",
   "actions": [

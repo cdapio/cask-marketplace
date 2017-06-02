@@ -33,7 +33,7 @@
             "to": "Error Records"
         }
     ],
-    "batchInterval": "1s",
+    "batchInterval": "10s",
     "comments": [],
     "postActions": [],
     "stages": [

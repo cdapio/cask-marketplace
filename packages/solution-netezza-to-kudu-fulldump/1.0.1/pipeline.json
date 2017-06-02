@@ -13,7 +13,7 @@
             "to": "Kudu"
         }
     ],
-    "batchInterval": "1s",
+    "batchInterval": "10s",
     "comments": [],
     "postActions": [],
     "stages": [
