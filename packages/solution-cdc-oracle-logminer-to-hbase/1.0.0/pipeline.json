@@ -1,0 +1,76 @@
+{
+    "resources": {
+      "memoryMB": 1024,
+      "virtualCores": 1
+    },
+    "driverResources": {
+      "memoryMB": 1024,
+      "virtualCores": 1
+    },
+    "connections": [
+      {
+        "from": "OracleLogMiner",
+        "to": "CDCHBase"
+      }
+    ],
+    "batchInterval": "15m",
+    "comments": [],
+    "postActions": [],
+    "properties": {
+      "system.spark.spark.streaming.backpressure.enabled": true,
+      "system.spark.spark.executor.instances": "1"
+    },
+    "processTimingEnabled": true,
+    "stageLoggingEnabled": true,
+    "numOfRecordsPreview": 100,
+    "maxConcurrentRuns": 1,
+    "stages": [
+      {
+        "name": "OracleLogMiner",
+        "plugin": {
+          "name": "OracleLogMiner",
+          "type": "streamingsource",
+          "label": "OracleLogMiner",
+          "artifact": {
+            "name": "cask-cdc",
+            "version": "1.0.0",
+            "scope": "USER"
+          },
+          "properties": {
+            "port": "1521",
+            "dictionarySource": "Online Catalog",
+            "referenceName": "LogMiner",
+            "hostname": "-- Type database hostname",
+            "username": "-- Type the database username",
+            "password": "-- Type the password",
+            "dbname": "-- Type the name of the database",
+            "startSCN": "-- Type the start SCN here",
+            "tableNames": "-- Type the comma separated list of table names"
+          }
+        }
+      },
+      {
+        "name": "CDCHBase",
+        "plugin": {
+          "name": "CDCHBase",
+          "type": "sparksink",
+          "label": "CDCHBase",
+          "artifact": {
+            "name": "cask-cdc",
+            "version": "1.0.0",
+            "scope": "USER"
+          },
+          "properties": {
+            "referenceName": "myname"
+          }
+        }
+      }
+    ],
+    "clientResources": {
+      "memoryMB": 1024,
+      "virtualCores": 1
+    },
+    "disableCheckpoints": false,
+    "stopGracefully": true,
+    "description": "Change Data Capture pipeline which reads the change data from Oracle database using LogMiner and transfer it to HBase sink."
+  }

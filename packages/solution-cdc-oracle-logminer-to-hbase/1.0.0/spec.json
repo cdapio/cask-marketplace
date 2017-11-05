@@ -1,0 +1,66 @@
+{
+  "specVersion": "1.0",
+  "label": "Change Data Capture(CDC) from Oracle LogMiner to HBase",
+  "description": "Pipeline that streams all changes made to a table, or a set of tables in the Oracle database to HBase using Oracle LogMiner.", 
+  "author": "Cask",
+  "org": "Cask Data, Inc.",
+  "created": 1490838885,
+  "categories": [ "usecase", "EDW Offloading" ],
+  "cdapVersion": "[4.2.0,5.0.0)",
+  "actions": [
+    {
+      "type": "one_step_deploy_plugin",
+      "label": "Deploy CDC Plugins",
+      "arguments": [
+        {
+          "name": "name",
+          "value": "cask-cdc",
+          "canModify": false
+        },
+        {
+          "name": "version",
+          "value": "1.0.0",
+          "canModify": false
+        },
+        {
+          "name": "scope",
+          "value": "user",
+          "canModify": false
+        },
+        {
+          "name": "config",
+          "value": "cask-cdc-1.0.0.json",
+          "canModify": false
+        },
+        {
+          "name": "jar",
+          "value": "cask-cdc-1.0.0.jar",
+          "canModify": false
+        }
+      ]
+    },
+    {
+      "type": "create_pipeline_draft",
+      "label": "Change Data Capture(CDC) from Oracle to HBase using LogMiner",
+      "arguments": [
+        {
+          "name": "artifact",
+          "value": {
+            "scope": "system",
+            "name": "cdap-data-streams",
+            "version": "4.2.0"
+          }
+        },
+        {
+          "name": "name",
+          "value": "OracleToHBaseChangeDataCapture",
+          "canModify": true
+        },
+        {
+          "name": "config",
+          "value": "pipeline.json"
+        }
+      ]
+    }
+  ]
+}
