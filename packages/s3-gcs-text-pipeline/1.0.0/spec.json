@@ -1,0 +1,39 @@
+{
+  "specVersion": "1.0",
+  "description": "Data Pipeline to copy data in text files from Amazon S3 to Google Cloud Storage.",
+  "label": "Amazon S3 to GCS",
+  "author": "Google",
+  "org": "Google, Inc.",
+  "cdapVersion": "[5.0.0-SNAPSHOT, 6.0.0-SNAPSHOT)",
+  "created": 1532741379,
+  "categories": [
+    "pipeline"
+  ],
+  "actions": [
+    {
+      "type": "create_pipeline_draft",
+      "label": "Amazon S3 to GCS Import",
+      "arguments": [
+        {
+          "name": "artifact",
+          "value": {
+            "scope": "system",
+            "name": "cdap-data-pipeline",
+            "version": "[5.0.0-SNAPSHOT, 6.0.0-SNAPSHOT)"
+          },
+          "canModify": false
+        },
+        {
+          "name": "name",
+          "value": "AmazonS3ToGCSText",
+          "canModify": true
+        },
+        {
+          "name": "config",
+          "value": "pipeline.json",
+          "canModify": false
+        }
+      ]
+    }
+  ]
+}
