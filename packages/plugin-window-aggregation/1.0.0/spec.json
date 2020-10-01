@@ -1,0 +1,45 @@
+{
+  "specVersion": "1.0",
+  "description": "Plugin to perform window aggregation functions in CDAP pipelines",
+  "label": "Window Aggregation",
+  "author": "Cask Data, Inc",
+  "org": "Cask Data, Inc.",
+  "cdapVersion": "[6.1.1,7.0.0-SNAPSHOT)",
+  "created": 1601552656,
+  "categories": [
+    "hydrator-plugin"
+  ],
+  "actions": [
+    {
+      "type": "one_step_deploy_plugin",
+      "label": "Deploy Window Aggregation Plugin",
+      "arguments": [
+        {
+          "name": "name",
+          "value": "window-aggregation",
+          "canModify": false
+        },
+        {
+          "name": "version",
+          "value": "1.0.0",
+          "canModify": false
+        },
+        {
+          "name": "scope",
+          "value": "user",
+          "canModify": false
+        },
+        {
+          "name": "config",
+          "value": "window-aggregator-1.0.0.json",
+          "canModify": false
+        },
+        {
+          "name": "jar",
+          "value": "window-aggregator-1.0.0.jar",
+          "canModify": false
+        }
+      ]
+    }
+  ]
+}
