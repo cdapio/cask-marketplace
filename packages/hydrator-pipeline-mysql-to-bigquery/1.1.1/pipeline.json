@@ -1,0 +1,64 @@
+{
+  "resources": {
+    "memoryMB": 2048,
+    "virtualCores": 1
+  },
+  "driverResources": {
+    "memoryMB": 2048,
+    "virtualCores": 1
+  },
+  "connections": [
+    {
+      "from": "Database",
+      "to": "BigQuery"
+    }
+  ],
+  "comments": [],
+  "postActions": [],
+  "stages": [
+    {
+      "name": "Database",
+      "plugin": {
+        "name": "Database",
+        "type": "batchsource",
+        "label": "Database",
+        "artifact": {
+          "name": "database-plugins",
+          "version": "[2.0.0-SNAPSHOT, 3.0.0-SNAPSHOT)",
+          "scope": "SYSTEM"
+        },
+        "properties": {
+          "enableAutoCommit": "false",
+          "columnNameCase": "No change",
+          "jdbcPluginName": "mysql",
+          "jdbcPluginType": "jdbc",
+          "referenceName": "Database",
+          "numSplits": "1"
+        }
+      }
+    },
+    {
+      "name": "BigQuery",
+      "plugin": {
+        "name": "BigQueryTable",
+        "type": "batchsink",
+        "label": "BigQuery",
+        "artifact": {
+          "name": "google-cloud",
+          "version": "[0.12.0,1.0.0-SNAPSHOT)",
+          "scope": "SYSTEM"
+        },
+        "properties": {
+          "project": "${gcp-project}",
+          "bucket": "${gcp-tmp-bucket}",
+          "serviceFilePath": "${gcp-service-account-key}",
+          "dataset": "${bigquery-dataset}",
+          "table": "${bigquery-table}"
+        }
+      }
+    }
+  ],
+  "schedule": "0 * * * *",
+  "engine": "mapreduce",
+  "description": "Transfer data from MySQL to Google BigQuery"
+}

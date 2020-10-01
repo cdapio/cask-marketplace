@@ -1,0 +1,59 @@
+{
+  "resources": {
+    "memoryMB": 512,
+    "virtualCores": 1
+  },
+  "driverResources": {
+    "memoryMB": 512,
+    "virtualCores": 1
+  },
+  "connections": [
+    {
+      "from": "Excel",
+      "to": "GCS"
+    }
+  ],
+  "comments": [],
+  "postActions": [],
+  "stages": [
+    {
+      "name": "Excel",
+      "plugin": {
+        "name": "Excel",
+        "type": "batchsource",
+        "label": "Excel",
+        "artifact": {
+          "name": "core-plugins",
+          "version": "[1.7.0-SNAPSHOT, 3.0.0-SNAPSHOT)",
+          "scope": "SYSTEM"
+        },
+        "properties": {
+          "reprocess": "false",
+          "sheet": "Sheet Name",
+          "skipFirstRow": "false",
+          "terminateIfEmptyRow": "false",
+          "ifErrorRecord": "Ignore error and continue",
+          "referenceName": "Excel",
+          "filePattern": ".*"
+        }
+      }
+    },
+    {
+        "name": "GCS",
+        "plugin": {
+            "name": "GCS",
+            "type": "batchsink",
+            "label": "Google Cloud Storage",
+            "artifact": {
+                "name": "google-cloud",
+                "version": "[0.12.0,1.0.0-SNAPSHOT)",
+                "scope": "SYSTEM"
+            },
+            "properties": {}
+        }
+    }
+  ],
+  "schedule": "0 * * * *",
+  "engine": "mapreduce",
+  "description": "Imports Data from Excel file and dumps it to time partitioned file set backed by Hive"
+}

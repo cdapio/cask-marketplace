@@ -8,7 +8,7 @@
   "categories": [ 
     "hydrator-plugin" 
   ],
-  "cdapVersion": "[6.0.0-SNAPSHOT,7.0.0-SNAPSHOT)",
+  "cdapVersion": "[6.0.0-SNAPSHOT,6.1.1)",
   "actions": [
     {
       "type": "one_step_deploy_plugin",

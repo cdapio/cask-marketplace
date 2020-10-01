@@ -4,7 +4,7 @@
   "label": "DB2 Plugins",
   "author": "Cask",
   "org": "Cask Data, Inc.",
-  "cdapVersion": "[6.1.0-SNAPSHOT, 7.0.0-SNAPSHOT)",
+  "cdapVersion": "(6.1.0-SNAPSHOT, 6.1.0-SNAPSHOT)",
   "created": 1585087648,
   "categories": [
     "EDW Offloading",

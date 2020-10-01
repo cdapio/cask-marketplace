@@ -1,7 +1,7 @@
 {
   "specVersion": "1.0",
   "label": "MongoDB",
-  "description": "Plugins to read/write from/to MongoDB in batch and realtime CDAP pipelines.",
+  "description": "Plugins to read/write from/to MongoDB in batch CDAP pipelines.",
   "author": "Cask",
   "org": "Cask Data, Inc.",
   "created": 1510006834,

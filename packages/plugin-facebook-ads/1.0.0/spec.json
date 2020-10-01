@@ -1,0 +1,46 @@
+{
+  "specVersion": "1.0",
+  "description": "Plugins to read data from Facebook Ads",
+  "label": "Facebook Ads Plugins",
+  "author": "Cask",
+  "org": "Cask Data, Inc.",
+  "cdapVersion": "[6.1.2,7.0.0-SNAPSHOT)",
+  "created": 1597945715,
+  "categories": [
+    "hydrator-plugin"
+  ],
+  "preview": true,
+  "actions": [
+    {
+      "type": "one_step_deploy_plugin",
+      "label": "Deploy FacebookAds Plugins",
+      "arguments": [
+        {
+          "name": "name",
+          "value": "facebookads-plugins",
+          "canModify": false
+        },
+        {
+          "name": "version",
+          "value": "1.0.0",
+          "canModify": false
+        },
+        {
+          "name": "scope",
+          "value": "user",
+          "canModify": false
+        },
+        {
+          "name": "config",
+          "value": "facebook-ads-1.0.0.json",
+          "canModify": false
+        },
+        {
+          "name": "jar",
+          "value": "facebook-ads-1.0.0.jar",
+          "canModify": false
+        }
+      ]
+    }
+  ]
+}

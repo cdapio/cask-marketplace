@@ -4,7 +4,7 @@
   "label": "HTTP to HDFS Action",
   "author": "Cask",
   "org": "Cask Data, Inc.",
-  "cdapVersion": "[6.0.0-SNAPSHOT,7.0.0-SNAPSHOT)",
+  "cdapVersion": "[6.0.0-SNAPSHOT,6.1.0)",
   "created": 1556234644,
   "categories": [
     "hydrator-plugin"

@@ -1,0 +1,10 @@
+{
+  "plugins": [
+    {
+      "name" : "cloudsql-mysql",
+      "type" : "jdbc",
+      "className" : "com.mysql.jdbc.Driver",
+      "description" : "Plugin for the CloudSQL MySQL JDBC driver"
+    }
+  ]
+}

@@ -1,0 +1,46 @@
+{
+  "specVersion": "1.0",
+  "label": "Google Analytics 360 Plugins",
+  "description": "Plugins to retrieve data from Google Analytics 360.",
+  "author": "Cask",
+  "org": "Cask Data, Inc.",
+  "created": 1597945715,
+  "categories": [ 
+    "hydrator-plugin" 
+  ],
+  "cdapVersion": "[6.1.2,7.0.0-SNAPSHOT)",
+  "preview": true,
+  "actions": [
+    {
+      "type": "one_step_deploy_plugin",
+      "label": "Deploy Google Analytics 360 Plugins",
+      "arguments": [
+        {
+          "name": "name",
+          "value": "googleanalytics360",
+          "canModify": false
+        },
+        {
+          "name": "version",
+          "value": "1.0.0",
+          "canModify": false
+        },
+        {
+          "name": "scope",
+          "value": "user",
+          "canModify": false
+        },
+        {
+          "name": "config",
+          "value": "google-analytics-360-plugin-1.0.0.json",
+          "canModify": false
+        },
+        {
+          "name": "jar",
+          "value": "google-analytics-360-plugin-1.0.0.jar",
+          "canModify": false
+        }
+      ]
+    }
+  ]
+}

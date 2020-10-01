@@ -1,0 +1,10 @@
+{
+  "plugins": [
+    {
+      "name" : "cloudsql-postgresql",
+      "type" : "jdbc",
+      "className" : "org.postgresql.Driver",
+      "description" : "Plugin for the CloudSQL PostgreSQL JDBC driver"
+    }
+  ]
+}

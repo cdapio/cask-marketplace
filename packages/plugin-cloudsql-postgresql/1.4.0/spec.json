@@ -1,0 +1,45 @@
+{
+  "specVersion": "1.0",
+  "description": "CloudSQL PostgreSQL plugins to read and write from a CloudSQL PostgreSQL instance",
+  "label": "CloudSQL PostgreSQL Plugins",
+  "author": "Cask",
+  "org": "Cask Data, Inc.",
+  "cdapVersion": "[6.1.0-SNAPSHOT,7.0.0-SNAPSHOT)",
+  "created": 1593069014,
+  "categories": [
+    "hydrator-plugin"
+  ],
+  "actions": [
+    {
+      "type": "one_step_deploy_plugin",
+      "label": "Deploy CloudSQL PostgreSQL Plugins",
+      "arguments": [
+        {
+          "name": "name",
+          "value": "cloudsql-postgresql-plugin",
+          "canModify": false
+        },
+        {
+          "name": "version",
+          "value": "1.4.0",
+          "canModify": false
+        },
+        {
+          "name": "scope",
+          "value": "user",
+          "canModify": false
+        },
+        {
+          "name": "config",
+          "value": "cloudsql-postgresql-plugin-1.4.0.json",
+          "canModify": false
+        },
+        {
+          "name": "jar",
+          "value": "cloudsql-postgresql-plugin-1.4.0.jar",
+          "canModify": false
+        }
+      ]
+    }
+  ]
+}
