@@ -1,0 +1,41 @@
+{
+  "specVersion": "1.0",
+  "label": "Amazon Kinesis Streaming Source",
+  "description": "Amazon Kinesis Streaming Source",
+  "author": "Cask",
+  "org": "Cask Data, Inc.",
+  "created": 1554789831,
+  "categories": [ 
+    "AWS", 
+    "hydrator-plugin" 
+  ],
+  "cdapVersion": "[6.1.0-SNAPSHOT,7.0.0-SNAPSHOT)",
+  "actions": [
+    {
+      "type": "one_step_deploy_plugin",
+      "label": "Deploy Amazon Kinesis Streaming Source",
+      "arguments": [
+        {
+          "name": "name",
+          "value": "Kinesis-sparkStreamingSource"
+        },
+        {
+          "name": "version",
+          "value": "1.2.0"
+        },
+        {
+          "name": "scope",
+          "value": "user"
+        },
+        {
+          "name": "config",
+          "value": "Kinesis-sparkStreamingSource-1.2.0"
+        },
+        {
+          "name": "jar",
+          "value": "Kinesis-sparkStreamingSource-1.2.0"
+        }
+      ]
+    }
+  ]
+}
