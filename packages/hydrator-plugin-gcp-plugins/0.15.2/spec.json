@@ -4,7 +4,7 @@
   "label": "Google Cloud Platform",
   "author": "Cask",
   "org": "Cask Data, Inc.",
-  "cdapVersion": "[6.2.0,7.0.0-SNAPSHOT)",
+  "cdapVersion": "[6.2.0-SNAPSHOT, 6.2.0)",
   "created": 1597787276,
   "categories": [
     "hydrator-plugin"
