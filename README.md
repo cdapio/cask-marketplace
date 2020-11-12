@@ -1,4 +1,4 @@
-# CDAP Hub
+# LiveRamp CDAP Hub
 
 ## Setup
 
@@ -29,7 +29,7 @@ To build the packager:
     cd ..
 
 The packager can be used to create the packages.json catalog file, create 'archive.zip'
-files, sign package specs and archives, and push the package files to s3. You can see the
+files, sign package specs and archives, and push the package files to GCS, S3 or other file storage. You can see the
 help manual by running:
 
     java -cp packager/target/*:packager/target/lib/* io.cdap.hub.Tool
@@ -52,7 +52,7 @@ catalog at the top level and adding 'spec.json.asc', 'archive.zip', and 'archive
     packages/<name>/<version>/<file2>
     packages/<name>/<version>/<file2>.asc
 
-To build all the packages and also push them to s3:
+To build all the packages and also push them to s3 as an example:
 
     java -cp packager/target/*:packager/target/lib/* io.cdap.hub.Tool publish -k <gpg keyring file> -i <keyid> -p <key password> -s3b <s3 bucket> -s3a <s3 access key> -s3s <s3 secret key>
 
