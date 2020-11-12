@@ -1,5 +1,12 @@
 # LiveRamp CDAP Hub
 
+The Hub concept in CDAP allows users to create and update CDAP artifacts, applications, and datasets using simple wizards. Instead of building code, deploying artifacts, and configuring applications, users can simply point and click. This allows users of varying technical skill the ability to deploy and run common use-cases in a self-service manner.
+
+The Hub allows system administrators to distribute re-usable applications, data, and code to all CDAP users in their organization. Though there is currently no method for publishing packages to the public CDAP-hosted Hub, administrators can host their own Hub and then configure their CDAP instances to use their own Hub instead of the public Hub.
+
+Installing from the Hub
+Anything installed from Hub gets installed in user space while plugins packaged with the product will get installed in system space. For example, installing Google Cloud plugins from Hub will install that version in user space, only in the particular namespace that you're in. 
+
 ## Setup
 
 Since this repo stores jar files, it is required that you use git-lfs.
