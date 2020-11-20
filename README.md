@@ -44,7 +44,7 @@ help manual by running:
 The packager uses PGP to sign archives and specs. It is therefore compatible with keyrings
 created with GnuPG. For example:
 
-    java -cp packager/target/*:packager/target/lib/* io.cdap.hub.Tool build -k ~/.gnupg/secring.gpg -i 499BC990789824FD -p mypassword
+    java -cp "packager/target/*":"packager/target/lib/*" io.cdap.hub.Tool build -k ~/.gnupg/secring.gpg -i 499BC990789824FD -p mypassword
 
 This will go through the files under the 'packages' directory, adding a 'packages.json'
 catalog at the top level and adding 'spec.json.asc', 'archive.zip', and 'archive.zip.asc' files:
@@ -61,7 +61,7 @@ catalog at the top level and adding 'spec.json.asc', 'archive.zip', and 'archive
 
 To build all the packages and also push them to s3 as an example:
 
-    java -cp packager/target/*:packager/target/lib/* io.cdap.hub.Tool publish -k <gpg keyring file> -i <keyid> -p <key password> -s3b <s3 bucket> -s3a <s3 access key> -s3s <s3 secret key>
+    java -cp "packager/target/*":"packager/target/lib/*" io.cdap.hub.Tool publish -k <gpg keyring file> -i <keyid> -p <key password> -s3b <s3 bucket> -s3a <s3 access key> -s3s <s3 secret key>
 
 This will build and sign all packages, as well as push anything that has changed to s3.
 The tool will use the md5 and file size to determine whether an object has changed or not.
