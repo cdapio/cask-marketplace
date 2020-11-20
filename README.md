@@ -104,11 +104,11 @@ everything about the package is the same except for the CDAP version and plugin 
 
 To generate new packages:
 
-    java -cp packager/target/*:packager/target/lib/* io.cdap.hub.Generator -cv <cdap-version> -gv <plugins-version> -pv <package-version> -bv <base-version> generate
+    java -cp "packager/target/*:packager/target/lib/*" io.cdap.hub.Generator -cv <cdap-version> -gv <plugins-version> -pv <package-version> -bv <base-version> generate
 
 For example:
 
-    java -cp packager/target/*:packager/target/lib/* io.cdap.hub.Generator -cv 4.1.0-SNAPSHOT -gv 1.6.0-SNAPSHOT -pv 1.1.0 -bv 1.0.1 generate
+    java -cp "packager/target/*":"packager/target/lib/*" io.cdap.hub.Generator -cv 4.1.0-SNAPSHOT -gv 1.6.0-SNAPSHOT -pv 1.1.0 -bv 1.0.1 generate
 
 will generate new 1.1.0 packages from existing 1.0.1 packages. The `cdapVersion` of the new packages will be `4.1.0-SNAPSHOT`,
 and the artifact version for plugins in pipeline configs will be `1.6.0-SNAPSHOT`. 
@@ -118,7 +118,7 @@ By default, the tool will ignore any beta packages and will only create new pack
 
 The generator can also modify existing packages instead of creating new packages. For example:
 
-    java -cp packager/target/*:packager/target/lib/* io.cdap.hub.Generator -cv 4.1.0 -gv 1.6.0 -pv 1.1.0 modify
+    java -cp "packager/target/*":"packager/target/lib/*" io.cdap.hub.Generator -cv 4.1.0 -gv 1.6.0 -pv 1.1.0 modify
 
 will modify all 1.1.0 packages to use 4.1.0 as the `cdapVersion` and 1.6.0 as the `plugin version`.
 
