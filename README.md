@@ -39,7 +39,7 @@ The packager can be used to create the packages.json catalog file, create 'archi
 files, sign package specs and archives, and push the package files to GCS, S3 or other file storage. You can see the
 help manual by running:
 
-    java -cp packager/target/*:packager/target/lib/* io.cdap.hub.Tool
+    java -cp "packager/target/*":"packager/target/lib/*" io.cdap.hub.Tool
 
 The packager uses PGP to sign archives and specs. It is therefore compatible with keyrings
 created with GnuPG. For example:
