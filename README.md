@@ -39,12 +39,12 @@ The packager can be used to create the packages.json catalog file, create 'archi
 files, sign package specs and archives, and push the package files to GCS, S3 or other file storage. You can see the
 help manual by running:
 
-    java -cp packager/target/*:packager/target/lib/* io.cdap.hub.Tool
+    java -cp "packager/target/*":"packager/target/lib/*" io.cdap.hub.Tool
 
 The packager uses PGP to sign archives and specs. It is therefore compatible with keyrings
 created with GnuPG. For example:
 
-    java -cp packager/target/*:packager/target/lib/* io.cdap.hub.Tool build -k ~/.gnupg/secring.gpg -i 499BC990789824FD -p mypassword
+    java -cp "packager/target/*":"packager/target/lib/*" io.cdap.hub.Tool build -k ~/.gnupg/secring.gpg -i 499BC990789824FD -p mypassword
 
 This will go through the files under the 'packages' directory, adding a 'packages.json'
 catalog at the top level and adding 'spec.json.asc', 'archive.zip', and 'archive.zip.asc' files:
@@ -61,7 +61,7 @@ catalog at the top level and adding 'spec.json.asc', 'archive.zip', and 'archive
 
 To build all the packages and also push them to s3 as an example:
 
-    java -cp packager/target/*:packager/target/lib/* io.cdap.hub.Tool publish -k <gpg keyring file> -i <keyid> -p <key password> -s3b <s3 bucket> -s3a <s3 access key> -s3s <s3 secret key>
+    java -cp "packager/target/*":"packager/target/lib/*" io.cdap.hub.Tool publish -k <gpg keyring file> -i <keyid> -p <key password> -s3b <s3 bucket> -s3a <s3 access key> -s3s <s3 secret key>
 
 This will build and sign all packages, as well as push anything that has changed to s3.
 The tool will use the md5 and file size to determine whether an object has changed or not.
@@ -104,11 +104,11 @@ everything about the package is the same except for the CDAP version and plugin 
 
 To generate new packages:
 
-    java -cp packager/target/*:packager/target/lib/* io.cdap.hub.Generator -cv <cdap-version> -gv <plugins-version> -pv <package-version> -bv <base-version> generate
+    java -cp "packager/target/*:packager/target/lib/*" io.cdap.hub.Generator -cv <cdap-version> -gv <plugins-version> -pv <package-version> -bv <base-version> generate
 
 For example:
 
-    java -cp packager/target/*:packager/target/lib/* io.cdap.hub.Generator -cv 4.1.0-SNAPSHOT -gv 1.6.0-SNAPSHOT -pv 1.1.0 -bv 1.0.1 generate
+    java -cp "packager/target/*":"packager/target/lib/*" io.cdap.hub.Generator -cv 4.1.0-SNAPSHOT -gv 1.6.0-SNAPSHOT -pv 1.1.0 -bv 1.0.1 generate
 
 will generate new 1.1.0 packages from existing 1.0.1 packages. The `cdapVersion` of the new packages will be `4.1.0-SNAPSHOT`,
 and the artifact version for plugins in pipeline configs will be `1.6.0-SNAPSHOT`. 
@@ -118,7 +118,7 @@ By default, the tool will ignore any beta packages and will only create new pack
 
 The generator can also modify existing packages instead of creating new packages. For example:
 
-    java -cp packager/target/*:packager/target/lib/* io.cdap.hub.Generator -cv 4.1.0 -gv 1.6.0 -pv 1.1.0 modify
+    java -cp "packager/target/*":"packager/target/lib/*" io.cdap.hub.Generator -cv 4.1.0 -gv 1.6.0 -pv 1.1.0 modify
 
 will modify all 1.1.0 packages to use 4.1.0 as the `cdapVersion` and 1.6.0 as the `plugin version`.
 
