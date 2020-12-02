@@ -1,7 +1,0 @@
-{
-  "properties": {
-    "widgets.parse-as-xml-doc-directive": "{\"icon\": {\n  \"arguments\": {\"data\": \"data:image/png;base64,\"},\n  \"type\": \"inline\"\n}}",
-    "doc.parse-as-xml-doc-directive": ""
-  },
-  "parents": ["system:wrangler-transform[4.0.0-SNAPSHOT, 5.0.0-SNAPSHOT)"]
-}
