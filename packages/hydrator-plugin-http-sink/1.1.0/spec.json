@@ -1,0 +1,46 @@
+{
+  "specVersion": "1.0",
+  "description": "A sink that will send records to an specific HTTP endpoint. Records can be batched to increase performance.",
+  "label": "HTTP Sink",
+  "author": "Cask",
+  "org": "Cask Data, Inc.",
+  "cdapVersion": "[6.0.0-SNAPSHOT, 6.1.0-SNAPSHOT)",
+  "created": 1556143144,
+  "categories": [
+    "hydrator-plugin"
+  ],
+  "actions": [
+    {
+      "type": "one_step_deploy_plugin",
+      "label": "Deploy HTTP Sink Plugin",
+      "arguments": [
+        {
+          "name": "name",
+          "value": "http-sink-plugin",
+          "canModify": false
+        },
+        {
+          "name": "version",
+          "value": "1.1.0",
+          "canModify": false
+        },
+        {
+          "name": "scope",
+          "value": "user",
+          "canModify": false
+        },
+        {
+          "name": "config",
+          "value": "http-sink-plugin-1.1.0.json",
+          "canModify": false
+        },
+        {
+          "name": "jar",
+          "value": "http-sink-plugin-1.1.0.jar",
+          "canModify": false
+        }
+      ]
+    }
+  ]
+}
+
