@@ -62,12 +62,15 @@ public class Tool {
       .addOption(new Option("w", "whitelist", true,
                             "A comma separated whitelist of categories to publish. Any package that does not have " +
                               "one of these categories will not be published."))
+      .addOption(new Option("pub", "publisher", true, "The Publisher to use to publish packages : 's3' or 'gcs'."))
       .addOption(new Option("s3b", "s3bucket", true, "The S3 bucket to publish packages to."))
       .addOption(new Option("s3p", "s3prefix", true,
                             "Optional prefix to use when publishing the s3. Defaults to empty."))
       .addOption(new Option("s3a", "s3access", true, "Access key to publish to s3."))
       .addOption(new Option("s3s", "s3secret", true, "Secret key to publish to s3."))
       .addOption(new Option("s3t", "s3timeout", true, "Timeout in seconds to use when pushing to s3. Defaults to 30."))
+      .addOption(new Option("gcsP", "gcsProjectId", true, "GCP project id to target."))
+      .addOption(new Option("gcsB", "gcsBucketName", true, "GCS bucket name where packages will be published."))
       .addOption(new Option("cfd", "cfdistribution", true, "Cloudfront distribution fronting the s3 bucket."))
       .addOption(new Option("cfa", "cfaccess", true, "Access key to invalidate cloudfront objects."))
       .addOption(new Option("cfs", "cfsecret", true, "Secret key to invalidate cloudfront objects."))
@@ -160,7 +163,9 @@ public class Tool {
       whitelist = parseWhitelist(commandLine.getOptionValue('w'));
     }
     Packager packager = new Packager(packageDirectory, signer, false, whitelist);
-    Publisher publisher = command.equalsIgnoreCase("publish") ? getPublisher(commandLine, whitelist) : null;
+    Publisher publisher = command.equalsIgnoreCase("publish")
+            ? new PublisherFactory().getPublisher(commandLine)
+            : null;
 
     packager.clean();
     if (command.equalsIgnoreCase("clean")) {

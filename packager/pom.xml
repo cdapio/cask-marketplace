@@ -59,7 +59,7 @@
     <bouncycastle.version>1.46</bouncycastle.version>
     <commons.cli.version>1.2</commons.cli.version>
     <gson.version>2.2.4</gson.version>
-    <guava.version>19.0</guava.version>
+    <guava.version>30.0-android</guava.version>
     <jsr.version>2.0.1</jsr.version>
     <logback.version>1.0.9</logback.version>
     <slf4j.version>1.7.5</slf4j.version>
@@ -123,6 +123,13 @@
       <artifactId>bcpg-jdk16</artifactId>
       <version>${bouncycastle.version}</version>
     </dependency>
+
+    <dependency>
+      <groupId>com.google.cloud</groupId>
+      <artifactId>google-cloud-storage</artifactId>
+      <version>1.113.4</version>
+    </dependency>
+
   </dependencies>
 
   <build>
