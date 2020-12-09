@@ -14,13 +14,11 @@
  * the License.
  */
 
-package io.cdap.hub;
+package io.cdap.hub.publisher;
 
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import org.apache.commons.cli.CommandLine;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -31,15 +29,12 @@ import java.util.Set;
  */
 public class PublisherFactory {
 
-    private static final Logger LOG = LoggerFactory.getLogger(Tool.class);
-
     public Publisher getPublisher(CommandLine commandLine) {
 
         if (Strings.isNullOrEmpty(commandLine.getOptionValue("publisher")) ||
                 (!commandLine.getOptionValue("publisher").equals("s3") &&
                 !commandLine.getOptionValue("publisher").equals("gcs"))) {
-            LOG.error("Must specify a publisher when publishing. Either 's3' or 'gcs'.");
-            System.exit(1);
+            throw new IllegalArgumentException("Must specify a publisher when publishing. Either 's3' or 'gcs'.");
         }
 
         if (commandLine.getOptionValue("publisher").equals("s3")) {
@@ -50,14 +45,14 @@ public class PublisherFactory {
     }
 
     private Publisher createGCSPublisher(CommandLine commandLine) {
-        if (!commandLine.hasOption("gcsP") || !commandLine.hasOption("gcsB")) {
-            LOG.error("Must specify a project id when publishing to GCS. Please use parameter 'gcsP'.");
-            System.exit(1);
+        if (!commandLine.hasOption("gcsP")) {
+            throw new IllegalArgumentException("Must specify a project id when publishing to GCS. " +
+                    "Please use parameter 'gcsP'.");
         }
 
         if (!commandLine.hasOption("gcsB")) {
-            LOG.error("Must specify a bucket name when publishing to GCS. Please use parameter 'gcsB'.");
-            System.exit(1);
+            throw new IllegalArgumentException("Must specify a bucket name when publishing to GCS. " +
+                    "Please use parameter 'gcsB'.");
         }
 
         return GCSPublisher
@@ -68,20 +63,17 @@ public class PublisherFactory {
     private S3Publisher createS3Publisher(CommandLine commandLine) {
 
         if (!commandLine.hasOption("s3b")) {
-            LOG.error("Must specify a bucket when publishing.");
-            System.exit(1);
+            throw new IllegalArgumentException("Must specify a bucket when publishing.");
         }
         String bucket = commandLine.getOptionValue("s3b");
 
         if (!commandLine.hasOption("s3a")) {
-            LOG.error("Must specify an s3 access key when publishing.");
-            System.exit(1);
+            throw new IllegalArgumentException("Must specify an s3 access key when publishing.");
         }
         String s3AccessKey = commandLine.getOptionValue("s3a");
 
         if (!commandLine.hasOption("s3s")) {
-            LOG.error("Must specify an s3 secret key when publishing.");
-            System.exit(1);
+            throw new IllegalArgumentException("Must specify an s3 secret key when publishing.");
         }
         String s3SecretKey = commandLine.getOptionValue("s3s");
 

@@ -16,16 +16,15 @@
 
 package io.cdap.hub;
 
-/**
- * Publishes the Hub.
- */
-public interface Publisher {
+import com.google.cloud.storage.Storage;
+import com.google.cloud.storage.StorageOptions;
 
-  /**
-   * Publish the hub.
-   *
-   * @param hub the hub to publish
-   * @throws Exception if there was an error publishing
-   */
-  void publish(Hub hub) throws Exception;
+/**
+ * Component to create Google Cloud Storage connection. Can be used for mocking behaviour in tests.
+ */
+public class GoogleCloudStorageClient {
+
+    public Storage createStorageConnection(String projectId) {
+        return StorageOptions.newBuilder().setProjectId(projectId).build().getService();
+    }
 }
