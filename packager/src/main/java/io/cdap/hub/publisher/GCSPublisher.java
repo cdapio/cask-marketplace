@@ -28,6 +28,7 @@ import com.google.common.hash.Hashing;
 import com.google.common.io.BaseEncoding;
 import com.google.common.io.Files;
 import com.google.common.net.MediaType;
+import io.cdap.hub.GoogleCloudStorageClient;
 import io.cdap.hub.Hub;
 import io.cdap.hub.Package;
 import io.cdap.hub.SignedFile;
@@ -52,6 +53,7 @@ public class GCSPublisher implements Publisher {
   private static final Logger LOG = LoggerFactory.getLogger(GCSPublisher.class);
   private static final FileTypeMap fileTypeMap = MimetypesFileTypeMap.getDefaultFileTypeMap();
   private Storage storage;
+  private GoogleCloudStorageClient googleCloudStorageClient;
   private final String projectId;
   private final String bucket;
   private final String prefix;
@@ -61,6 +63,18 @@ public class GCSPublisher implements Publisher {
   private final Set<String> updatedKeys;
 
   private GCSPublisher(String projectId, String bucket, String prefix, boolean dryrun, boolean forcePush) {
+    this.googleCloudStorageClient = new GoogleCloudStorageClient();
+    this.projectId = projectId;
+    this.bucket = bucket;
+    this.prefix = prefix;
+    this.dryrun = dryrun;
+    this.forcePush = forcePush;
+    this.updatedKeys = new HashSet<>();
+  }
+
+  private GCSPublisher(GoogleCloudStorageClient googleCloudStorageClient,
+                       String projectId, String bucket, String prefix, boolean dryrun, boolean forcePush) {
+    this.googleCloudStorageClient = googleCloudStorageClient;
     this.projectId = projectId;
     this.bucket = bucket;
     this.prefix = prefix;
@@ -71,7 +85,7 @@ public class GCSPublisher implements Publisher {
 
   @Override
   public void publish(Hub hub) throws Exception {
-    this.storage = StorageOptions.newBuilder().setProjectId(projectId).build().getService();
+    this.storage = this.googleCloudStorageClient.createStorageConnection(this.projectId);
     updatedKeys.clear();
 
     List<Package> packages = hub.getPackages();
@@ -101,9 +115,9 @@ public class GCSPublisher implements Publisher {
       putFilesIfChanged(keyPrefix, file.getFile(), file.getSignature());
     }
 
-    Bucket bucket = storage.get(this.bucket);
     Page<Blob> blobs =
-            bucket.list(
+            storage.list(
+                    this.bucket,
                     Storage.BlobListOption.prefix(keyPrefix),
                     Storage.BlobListOption.currentDirectory());
 
@@ -147,9 +161,9 @@ public class GCSPublisher implements Publisher {
     }
     String key = keyPrefix + file.getName();
 
-    Bucket bucket = storage.get(this.bucket);
     Page<Blob> blobs =
-            bucket.list(
+            storage.list(
+                    this.bucket,
                     Storage.BlobListOption.prefix(key),
                     Storage.BlobListOption.currentDirectory());
     if (blobs.hasNextPage()) {
@@ -241,6 +255,9 @@ public class GCSPublisher implements Publisher {
 
     public GCSPublisher build() {
       return new GCSPublisher(projectId, bucket, prefix, dryrun, forcePush);
+    }
+    public GCSPublisher buildWithStorageClient(GoogleCloudStorageClient googleCloudStorageClient) {
+      return new GCSPublisher(googleCloudStorageClient, projectId, bucket, prefix, dryrun, forcePush);
     }
   }
 }
