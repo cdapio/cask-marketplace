@@ -113,10 +113,11 @@ public class GCSPublisher implements Publisher {
       String name = objectKey.substring(keyPrefix.length());
       if (!pkg.getFileNames().contains(name)) {
         if (!dryrun) {
-          LOG.info("Deleting object {} from s3 since it does not exist in the package anymore.", objectKey);
+          LOG.info("Deleting object {} from gcs bucket since it does not exist in the package anymore.", objectKey);
           storage.delete(blob.getBlobId());
         } else {
-          LOG.info("dryrun - would have deleted {} from s3 since it does not exist in the package anymore.", objectKey);
+          LOG.info("dryrun - would have deleted {} from gcs bucket since it does not exist in the package anymore.",
+                  objectKey);
         }
       }
     }
@@ -127,7 +128,7 @@ public class GCSPublisher implements Publisher {
     putFilesIfChanged(keyPrefix, categoryMeta.getIcon());
   }
 
-  // if the specified file has changed, put it plus all extra files on s3.
+  // if the specified file has changed, put it plus all extra files on gcs bucket.
   private void putFilesIfChanged(String keyPrefix, @Nullable File file, File... extraFiles) throws IOException {
     if (file != null && shouldPush(keyPrefix, file)) {
       putFile(keyPrefix, file);
@@ -158,7 +159,7 @@ public class GCSPublisher implements Publisher {
       String md5Hex = BaseEncoding.base16().encode(Files.hash(file, Hashing.md5()).asBytes());
       if (existingContentFileLength == fileLength &&
         blob.getEtag() != null && blob.getEtag().equalsIgnoreCase(md5Hex)) {
-        LOG.info("{} has not changed, skipping upload to S3.", file);
+        LOG.info("{} has not changed, skipping upload to GCS bucket.", file);
         return false;
       }
     }
@@ -188,14 +189,14 @@ public class GCSPublisher implements Publisher {
     String key = keyPrefix + file.getName();
 
     if (!dryrun) {
-      LOG.info("put file {} into s3 with key {}", file, key);
+      LOG.info("put file {} into gcs bucket with key {}", file, key);
       BlobId blobId = BlobId.of(bucket, key);
       BlobInfo blobInfo = BlobInfo.newBuilder(blobId)
               .setMetadata(ImmutableMap.of("Content-Type", contentType))
               .build();
       storage.create(blobInfo, Files.toByteArray(file));
     } else {
-      LOG.info("dryrun - would have put file {} into s3 with key {}", file, key);
+      LOG.info("dryrun - would have put file {} into gcs bucket with key {}", file, key);
     }
     updatedKeys.add("/" + key);
   }
@@ -205,7 +206,7 @@ public class GCSPublisher implements Publisher {
   }
 
   /**
-   * Builder to create the S3Publisher.
+   * Builder to create the GCSPublisher.
    */
   public static class Builder {
 

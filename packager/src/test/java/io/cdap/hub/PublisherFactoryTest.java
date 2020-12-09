@@ -30,14 +30,11 @@ import org.junit.jupiter.api.Test;
 
 class PublisherFactoryTest {
 
+    private final Options options = CommandLineHelper.createCommandLineOptions();
+
     @Test
     public void getPublisher_publisherArgumentInvalid_systemErrorExit() throws ParseException {
         // GIVEN
-        Options options = new Options()
-                .addOption(new Option("pub", "publisher", true, "The Publisher to useto publish packages : 's3' or 'gcs'."))
-                .addOption(new Option("gcsP", "gcsProjectId", true, "GCP project id to target."))
-                .addOption(new Option("gcsB", "gcsBucketName", true, "GCS bucket namewhere packages will be published."));
-
         CommandLineParser parser = new BasicParser();
         String[] args = new String[]{"-pub", "incorrect"};
         CommandLine commandLine = parser.parse(options, args);
@@ -58,9 +55,12 @@ class PublisherFactoryTest {
     public void getPublisher_publisherIsGcsAndGcsProjectIdArgMissing_throwsException() throws ParseException {
         // GIVEN
         Options options = new Options()
-                .addOption(new Option("pub", "publisher", true, "The Publisher to useto publish packages : 's3' or 'gcs'."))
-                .addOption(new Option("gcsP", "gcsProjectId", true, "GCP project id to target."))
-                .addOption(new Option("gcsB", "gcsBucketName", true, "GCS bucket name where packages will be published."));
+                .addOption(new Option("pub", "publisher", true,
+                        "The Publisher to useto publish packages : 's3' or 'gcs'."))
+                .addOption(new Option("gcsP", "gcsProjectId", true,
+                        "GCP project id to target."))
+                .addOption(new Option("gcsB", "gcsBucketName", true,
+                        "GCS bucket name where packages will be published."));
 
         CommandLineParser parser = new BasicParser();
         String[] args = new String[]{"-pub", "gcs"};
@@ -82,9 +82,12 @@ class PublisherFactoryTest {
     public void getPublisher_publisherIsGcsAndGcsBucketArgMissing_throwsException() throws ParseException {
         // GIVEN
         Options options = new Options()
-                .addOption(new Option("pub", "publisher", true, "The Publisher to useto publish packages : 's3' or 'gcs'."))
-                .addOption(new Option("gcsP", "gcsProjectId", true, "GCP project id to target."))
-                .addOption(new Option("gcsB", "gcsBucketName", true, "GCS bucket name where packages will be published."));
+                .addOption(new Option("pub", "publisher", true,
+                        "The Publisher to useto publish packages : 's3' or 'gcs'."))
+                .addOption(new Option("gcsP", "gcsProjectId", true,
+                        "GCP project id to target."))
+                .addOption(new Option("gcsB", "gcsBucketName", true,
+                        "GCS bucket name where packages will be published."));
 
         CommandLineParser parser = new BasicParser();
         String[] args = new String[]{"-pub", "gcs", "-gcsP", "someProject"};
@@ -106,9 +109,12 @@ class PublisherFactoryTest {
     public void getPublisher_publisherIsGcsAndArgsValid_returnGCSPublisher() throws ParseException {
         // GIVEN
         Options options = new Options()
-                .addOption(new Option("pub", "publisher", true, "The Publisher to useto publish packages : 's3' or 'gcs'."))
-                .addOption(new Option("gcsP", "gcsProjectId", true, "GCP project id to target."))
-                .addOption(new Option("gcsB", "gcsBucketName", true, "GCS bucket name where packages will be published."));
+                .addOption(new Option("pub", "publisher", true,
+                        "The Publisher to useto publish packages : 's3' or 'gcs'."))
+                .addOption(new Option("gcsP", "gcsProjectId", true,
+                        "GCP project id to target."))
+                .addOption(new Option("gcsB", "gcsBucketName", true,
+                        "GCS bucket name where packages will be published."));
 
         CommandLineParser parser = new BasicParser();
         String[] args = new String[]{"-pub", "gcs", "-gcsP", "someProject", "-gcsB", "someBucket"};
@@ -125,10 +131,14 @@ class PublisherFactoryTest {
     public void getPublisher_publisherIsS3AndS3BucketArgMissing_throwsException() throws ParseException {
         // GIVEN
         Options options = new Options()
-                .addOption(new Option("pub", "publisher", true, "The Publisher to use to publish packages : 's3' or 'gcs'."))
-                .addOption(new Option("s3b", "s3bucket", true, "The S3 bucket to publish packages to."))
-                .addOption(new Option("s3a", "s3access", true, "Access key to publish to s3."))
-                .addOption(new Option("s3s", "s3secret", true, "Secret key to publish to s3."));
+                .addOption(new Option("pub", "publisher", true,
+                        "The Publisher to use to publish packages : 's3' or 'gcs'."))
+                .addOption(new Option("s3b", "s3bucket", true,
+                        "The S3 bucket to publish packages to."))
+                .addOption(new Option("s3a", "s3access", true,
+                        "Access key to publish to s3."))
+                .addOption(new Option("s3s", "s3secret", true,
+                        "Secret key to publish to s3."));
 
         CommandLineParser parser = new BasicParser();
         String[] args = new String[]{"-pub", "s3"};
@@ -150,10 +160,14 @@ class PublisherFactoryTest {
     public void getPublisher_publisherIsS3AndS3AccessKeyArgMissing_throwsException() throws ParseException {
         // GIVEN
         Options options = new Options()
-                .addOption(new Option("pub", "publisher", true, "The Publisher to use to publish packages : 's3' or 'gcs'."))
-                .addOption(new Option("s3b", "s3bucket", true, "The S3 bucket to publish packages to."))
-                .addOption(new Option("s3a", "s3access", true, "Access key to publish to s3."))
-                .addOption(new Option("s3s", "s3secret", true, "Secret key to publish to s3."));
+                .addOption(new Option("pub", "publisher", true,
+                        "The Publisher to use to publish packages : 's3' or 'gcs'."))
+                .addOption(new Option("s3b", "s3bucket", true,
+                        "The S3 bucket to publish packages to."))
+                .addOption(new Option("s3a", "s3access", true,
+                        "Access key to publish to s3."))
+                .addOption(new Option("s3s", "s3secret", true,
+                        "Secret key to publish to s3."));
 
         CommandLineParser parser = new BasicParser();
         String[] args = new String[]{"-pub", "s3", "-s3b", "someBucket"};
@@ -175,10 +189,14 @@ class PublisherFactoryTest {
     public void getPublisher_publisherIsS3AndS3SecretArgMissing_throwsException() throws ParseException {
         // GIVEN
         Options options = new Options()
-                .addOption(new Option("pub", "publisher", true, "The Publisher to use to publish packages : 's3' or 'gcs'."))
-                .addOption(new Option("s3b", "s3bucket", true, "The S3 bucket to publish packages to."))
-                .addOption(new Option("s3a", "s3access", true, "Access key to publish to s3."))
-                .addOption(new Option("s3s", "s3secret", true, "Secret key to publish to s3."));
+                .addOption(new Option("pub", "publisher", true,
+                        "The Publisher to use to publish packages : 's3' or 'gcs'."))
+                .addOption(new Option("s3b", "s3bucket", true,
+                        "The S3 bucket to publish packages to."))
+                .addOption(new Option("s3a", "s3access", true,
+                        "Access key to publish to s3."))
+                .addOption(new Option("s3s", "s3secret", true,
+                        "Secret key to publish to s3."));
 
         CommandLineParser parser = new BasicParser();
         String[] args = new String[]{"-pub", "s3", "-s3b", "someBucket", "-s3a", "someAccess"};
@@ -200,10 +218,14 @@ class PublisherFactoryTest {
     public void getPublisher_publisherIsS3AndArgsValid_returnS3Publisher() throws ParseException {
         // GIVEN
         Options options = new Options()
-                .addOption(new Option("pub", "publisher", true, "The Publisher to use to publish packages : 's3' or 'gcs'."))
-                .addOption(new Option("s3b", "s3bucket", true, "The S3 bucket to publish packages to."))
-                .addOption(new Option("s3a", "s3access", true, "Access key to publish to s3."))
-                .addOption(new Option("s3s", "s3secret", true, "Secret key to publish to s3."));
+                .addOption(new Option("pub", "publisher", true,
+                        "The Publisher to use to publish packages : 's3' or 'gcs'."))
+                .addOption(new Option("s3b", "s3bucket", true,
+                        "The S3 bucket to publish packages to."))
+                .addOption(new Option("s3a", "s3access", true,
+                        "Access key to publish to s3."))
+                .addOption(new Option("s3s", "s3secret", true,
+                        "Secret key to publish to s3."));
 
         CommandLineParser parser = new BasicParser();
         String[] args = new String[]{"-pub", "s3", "-s3b", "someBucket", "-s3a", "someAccess", "-s3s", "someSecret"};
