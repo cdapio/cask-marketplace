@@ -1,46 +1,6 @@
 [
   {
-    "name": "3rd-party-artifact",
-    "hasIcon": false
-  },
-  {
-    "name": "AWS",
-    "hasIcon": false
-  },
-  {
-    "name": "Azure",
-    "hasIcon": false
-  },
-  {
-    "name": "Directives",
-    "hasIcon": false
-  },
-  {
-    "name": "EDW Offloading",
-    "hasIcon": false
-  },
-  {
-    "name": "datapack",
-    "hasIcon": false
-  },
-  {
     "name": "example",
-    "hasIcon": false
-  },
-  {
-    "name": "gcp",
-    "hasIcon": false
-  },
-  {
-    "name": "hydrator-plugin",
-    "hasIcon": false
-  },
-  {
-    "name": "pipeline",
-    "hasIcon": false
-  },
-  {
-    "name": "usecase",
     "hasIcon": false
   }
 ]
