@@ -17,19 +17,16 @@
 package io.cdap.hub.publisher;
 
 import com.google.cloud.storage.Blob;
-import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.contrib.nio.testing.LocalStorageHelper;
 import io.cdap.hub.GoogleCloudStorageClient;
 import io.cdap.hub.Hub;
 import io.cdap.hub.Packager;
-import org.bouncycastle.openpgp.PGPException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
 import java.io.File;
 import java.util.HashSet;
 import java.util.stream.StreamSupport;
@@ -40,54 +37,54 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class GCSPublisherTest {
 
-    @Mock
-    private GoogleCloudStorageClient googleCloudStorageClient;
+  @Mock
+  private GoogleCloudStorageClient googleCloudStorageClient;
 
-    @Test
-    public void publish_testServiceArtifact_allFilesUploadedCorrectly() throws Exception {
-        // GIVEN
-        String someProjectId = "someProjectId";
+  @Test
+  public void publish_testServiceArtifact_allFilesUploadedCorrectly() throws Exception {
+    // GIVEN
+    String someProjectId = "someProjectId";
 
-        // Stubbing the GoogleCloudStorageClient to return a mock storage
-        Storage mockedStorage = LocalStorageHelper.getOptions().getService();
-        when(googleCloudStorageClient.createStorageConnection(someProjectId))
-                .thenReturn(mockedStorage);
+    // Stubbing the GoogleCloudStorageClient to return a mock storage
+    Storage mockedStorage = LocalStorageHelper.getOptions().getService();
+    when(googleCloudStorageClient.createStorageConnection(someProjectId))
+        .thenReturn(mockedStorage);
 
-        // Creating the local test Hub structure based on local src/test/resources/packages
-        File packagesDirectory = new File("src/test/resources");
-        Packager packager = new Packager(packagesDirectory, null, false, new HashSet<>());
-        packager.clean();
-        Hub hub = packager.build();
+    // Creating the local test Hub structure based on local src/test/resources/packages
+    File packagesDirectory = new File("src/test/resources");
+    Packager packager = new Packager(packagesDirectory, null, false, new HashSet<>());
+    packager.clean();
+    Hub hub = packager.build();
 
-        // WHEN
-        // Creating the publisher with the stubbed GoogleCloudStorageClient
-        GCSPublisher gcsPublisher = GCSPublisher.builder(someProjectId, "someBucket")
-                .buildWithStorageClient(googleCloudStorageClient);
-        gcsPublisher.publish(hub);
+    // WHEN
+    // Creating the publisher with the stubbed GoogleCloudStorageClient
+    GCSPublisher gcsPublisher = GCSPublisher.builder(someProjectId, "someBucket")
+        .buildWithStorageClient(googleCloudStorageClient);
+    gcsPublisher.publish(hub);
 
-        // THEN
-        // Asserting that test-service artifact has been uploaded to the local test bucket to correct path
-        // Icon, spec, and the jar
-        Iterable<Blob> testServiceJar = mockedStorage
-                .list("someBucket", Storage.BlobListOption.prefix("/packages/test-service"))
-                .getValues();
-        assertTrue(
-                StreamSupport.stream(testServiceJar.spliterator(), false)
-                        .map(BlobInfo::getName)
-                        .allMatch(item -> item.equals("/packages/test-service/1.0.0/test-service-1.0.0.jar")
-                                || item.equals("/packages/test-service/1.0.0/icon.png")
-                                || item.equals("/packages/test-service/1.0.0/spec.json"))
-        );
+    // THEN
+    // Asserting that test-service artifact has been uploaded to the local test bucket to correct path
+    // Icon, spec, and the jar
+    Iterable<Blob> testServiceJar = mockedStorage
+        .list("someBucket", Storage.BlobListOption.prefix("/packages/test-service"))
+        .getValues();
+    assertTrue(
+        StreamSupport.stream(testServiceJar.spliterator(), false)
+            .map(BlobInfo::getName)
+            .allMatch(item -> item.equals("/packages/test-service/1.0.0/test-service-1.0.0.jar")
+                || item.equals("/packages/test-service/1.0.0/icon.png")
+                || item.equals("/packages/test-service/1.0.0/spec.json"))
+    );
 
-        // Asserting that packages.json and categories.json have been uploaded to correct path
-        Iterable<Blob> metadataJson = mockedStorage
-                .list("someBucket", Storage.BlobListOption.prefix("/packages"))
-                .getValues();
-        assertTrue(
-                StreamSupport.stream(metadataJson.spliterator(), false)
-                        .map(BlobInfo::getName)
-                        .allMatch(item -> item.equals("/packages/packages.json")
-                                || item.equals("/packages/categories.json"))
-        );
-    }
+    // Asserting that packages.json and categories.json have been uploaded to correct path
+    Iterable<Blob> metadataJson = mockedStorage
+        .list("someBucket", Storage.BlobListOption.prefix("/packages"))
+        .getValues();
+    assertTrue(
+        StreamSupport.stream(metadataJson.spliterator(), false)
+            .map(BlobInfo::getName)
+            .allMatch(item -> item.equals("/packages/packages.json")
+                || item.equals("/packages/categories.json"))
+    );
+  }
 }

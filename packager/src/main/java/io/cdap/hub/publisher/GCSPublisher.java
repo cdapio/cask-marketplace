@@ -20,9 +20,7 @@ import com.google.api.gax.paging.Page;
 import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.BlobInfo;
-import com.google.cloud.storage.Bucket;
 import com.google.cloud.storage.Storage;
-import com.google.cloud.storage.StorageOptions;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.hash.Hashing;
 import com.google.common.io.BaseEncoding;
@@ -35,13 +33,11 @@ import io.cdap.hub.SignedFile;
 import io.cdap.hub.spec.CategoryMeta;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 import javax.activation.FileTypeMap;
 import javax.activation.MimetypesFileTypeMap;
 import javax.annotation.Nullable;
@@ -50,10 +46,10 @@ import javax.annotation.Nullable;
  * Publish packages to GCS bucket.
  */
 public class GCSPublisher implements Publisher {
+
   private static final Logger LOG = LoggerFactory.getLogger(GCSPublisher.class);
   private static final FileTypeMap fileTypeMap = MimetypesFileTypeMap.getDefaultFileTypeMap();
-  private Storage storage;
-  private GoogleCloudStorageClient googleCloudStorageClient;
+  private final GoogleCloudStorageClient googleCloudStorageClient;
   private final String projectId;
   private final String bucket;
   private final String prefix;
@@ -61,6 +57,8 @@ public class GCSPublisher implements Publisher {
   private final boolean forcePush;
   private final boolean dryrun;
   private final Set<String> updatedKeys;
+
+  private Storage storage;
 
   private GCSPublisher(String projectId, String bucket, String prefix, boolean dryrun, boolean forcePush) {
     this.googleCloudStorageClient = new GoogleCloudStorageClient();
@@ -72,8 +70,9 @@ public class GCSPublisher implements Publisher {
     this.updatedKeys = new HashSet<>();
   }
 
-  private GCSPublisher(GoogleCloudStorageClient googleCloudStorageClient,
-                       String projectId, String bucket, String prefix, boolean dryrun, boolean forcePush) {
+  private GCSPublisher(
+      GoogleCloudStorageClient googleCloudStorageClient,
+      String projectId, String bucket, String prefix, boolean dryrun, boolean forcePush) {
     this.googleCloudStorageClient = googleCloudStorageClient;
     this.projectId = projectId;
     this.bucket = bucket;
@@ -116,10 +115,10 @@ public class GCSPublisher implements Publisher {
     }
 
     Page<Blob> blobs =
-            storage.list(
-                    this.bucket,
-                    Storage.BlobListOption.prefix(keyPrefix),
-                    Storage.BlobListOption.currentDirectory());
+        storage.list(
+            this.bucket,
+            Storage.BlobListOption.prefix(keyPrefix),
+            Storage.BlobListOption.currentDirectory());
 
     for (Blob blob : blobs.iterateAll()) {
 
@@ -130,8 +129,9 @@ public class GCSPublisher implements Publisher {
           LOG.info("Deleting object {} from gcs bucket since it does not exist in the package anymore.", objectKey);
           storage.delete(blob.getBlobId());
         } else {
-          LOG.info("dryrun - would have deleted {} from gcs bucket since it does not exist in the package anymore.",
-                  objectKey);
+          LOG.info(
+              "dryrun - would have deleted {} from gcs bucket since it does not exist in the package anymore.",
+              objectKey);
         }
       }
     }
@@ -162,17 +162,17 @@ public class GCSPublisher implements Publisher {
     String key = keyPrefix + file.getName();
 
     Page<Blob> blobs =
-            storage.list(
-                    this.bucket,
-                    Storage.BlobListOption.prefix(key),
-                    Storage.BlobListOption.currentDirectory());
+        storage.list(
+            this.bucket,
+            Storage.BlobListOption.prefix(key),
+            Storage.BlobListOption.currentDirectory());
     if (blobs.hasNextPage()) {
       Blob blob = blobs.getNextPage().getValues().iterator().next();
       long existingContentFileLength = blob.getSize();
       long fileLength = file.length();
       String md5Hex = BaseEncoding.base16().encode(Files.hash(file, Hashing.md5()).asBytes());
       if (existingContentFileLength == fileLength &&
-        blob.getEtag() != null && blob.getEtag().equalsIgnoreCase(md5Hex)) {
+          blob.getEtag() != null && blob.getEtag().equalsIgnoreCase(md5Hex)) {
         LOG.info("{} has not changed, skipping upload to GCS bucket.", file);
         return false;
       }
@@ -206,8 +206,8 @@ public class GCSPublisher implements Publisher {
       LOG.info("put file {} into gcs bucket with key {}", file, key);
       BlobId blobId = BlobId.of(bucket, key);
       BlobInfo blobInfo = BlobInfo.newBuilder(blobId)
-              .setMetadata(ImmutableMap.of("Content-Type", contentType))
-              .build();
+          .setMetadata(ImmutableMap.of("Content-Type", contentType))
+          .build();
       storage.create(blobInfo, Files.toByteArray(file));
     } else {
       LOG.info("dryrun - would have put file {} into gcs bucket with key {}", file, key);
@@ -256,6 +256,7 @@ public class GCSPublisher implements Publisher {
     public GCSPublisher build() {
       return new GCSPublisher(projectId, bucket, prefix, dryrun, forcePush);
     }
+
     public GCSPublisher buildWithStorageClient(GoogleCloudStorageClient googleCloudStorageClient) {
       return new GCSPublisher(googleCloudStorageClient, projectId, bucket, prefix, dryrun, forcePush);
     }

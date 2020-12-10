@@ -38,7 +38,6 @@ import io.cdap.hub.SignedFile;
 import io.cdap.hub.spec.CategoryMeta;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
@@ -52,6 +51,7 @@ import javax.annotation.Nullable;
  * Publish packages to S3.
  */
 public class S3Publisher implements Publisher {
+
   private static final Logger LOG = LoggerFactory.getLogger(S3Publisher.class);
   private static final FileTypeMap fileTypeMap = MimetypesFileTypeMap.getDefaultFileTypeMap();
   private final AmazonS3Client s3Client;
@@ -66,9 +66,10 @@ public class S3Publisher implements Publisher {
   private final Set<String> whitelist;
   private final Set<String> updatedKeys;
 
-  private S3Publisher(AmazonS3Client s3Client, @Nullable AmazonCloudFrontClient cfClient,
-                      String bucket, String prefix, @Nullable String cfDistribution,
-                      boolean forcePush, boolean dryrun, Set<String> whitelist) {
+  private S3Publisher(
+      AmazonS3Client s3Client, @Nullable AmazonCloudFrontClient cfClient,
+      String bucket, String prefix, @Nullable String cfDistribution,
+      boolean forcePush, boolean dryrun, Set<String> whitelist) {
     this.s3Client = s3Client;
     this.cfClient = cfClient;
     this.bucket = bucket;
@@ -97,11 +98,11 @@ public class S3Publisher implements Publisher {
 
     if (cfClient != null && !updatedKeys.isEmpty()) {
       CreateInvalidationRequest invalidationRequest = new CreateInvalidationRequest()
-        .withDistributionId(cfDistribution)
-        .withInvalidationBatch(
-          new InvalidationBatch()
-            .withPaths(new Paths().withItems(updatedKeys).withQuantity(updatedKeys.size()))
-            .withCallerReference(String.valueOf(System.currentTimeMillis())));
+          .withDistributionId(cfDistribution)
+          .withInvalidationBatch(
+              new InvalidationBatch()
+                  .withPaths(new Paths().withItems(updatedKeys).withQuantity(updatedKeys.size()))
+                  .withCallerReference(String.valueOf(System.currentTimeMillis())));
       if (!dryrun) {
         LOG.info("Invalidating cloudfront objects {}", updatedKeys);
         cfClient.createInvalidation(invalidationRequest);
@@ -166,8 +167,8 @@ public class S3Publisher implements Publisher {
       long fileLength = file.length();
       String md5Hex = BaseEncoding.base16().encode(Files.hash(file, Hashing.md5()).asBytes());
       if (existingMeta != null &&
-        existingMeta.getContentLength() == fileLength &&
-        existingMeta.getETag() != null && existingMeta.getETag().equalsIgnoreCase(md5Hex)) {
+          existingMeta.getContentLength() == fileLength &&
+          existingMeta.getETag() != null && existingMeta.getETag().equalsIgnoreCase(md5Hex)) {
         LOG.info("{} has not changed, skipping upload to S3.", file);
         return false;
       }
@@ -198,8 +199,8 @@ public class S3Publisher implements Publisher {
     newMeta.setContentType(contentType);
     String key = keyPrefix + file.getName();
     PutObjectRequest request = new PutObjectRequest(bucket, key, file)
-      .withCannedAcl(CannedAccessControlList.PublicRead)
-      .withMetadata(newMeta);
+        .withCannedAcl(CannedAccessControlList.PublicRead)
+        .withMetadata(newMeta);
     if (!dryrun) {
       LOG.info("put file {} into s3 with key {}", file, key);
       s3Client.putObject(request);
@@ -217,6 +218,7 @@ public class S3Publisher implements Publisher {
    * Builder to create the S3Publisher.
    */
   public static class Builder {
+
     private final String s3Bucket;
     private final String s3AccessKey;
     private final String s3SecretKey;
@@ -282,8 +284,8 @@ public class S3Publisher implements Publisher {
 
     public S3Publisher build() {
       ClientConfiguration clientConf = new ClientConfiguration()
-        .withProtocol(Protocol.HTTPS)
-        .withSocketTimeout(timeout * 1000);
+          .withProtocol(Protocol.HTTPS)
+          .withSocketTimeout(timeout * 1000);
 
       AmazonS3Client s3Client = new AmazonS3Client(new BasicAWSCredentials(s3AccessKey, s3SecretKey), clientConf);
 
@@ -291,7 +293,7 @@ public class S3Publisher implements Publisher {
       if (cfDistribution != null) {
         if (cfAccessKey == null || cfSecretKey == null) {
           throw new IllegalArgumentException(
-            "When specifying a cloudfront distribution, must also specify a cloudfront access key and secret key.");
+              "When specifying a cloudfront distribution, must also specify a cloudfront access key and secret key.");
         }
         cfClient = new AmazonCloudFrontClient(new BasicAWSCredentials(cfAccessKey, cfSecretKey), clientConf);
       }

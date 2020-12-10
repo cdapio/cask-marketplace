@@ -23,15 +23,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class CommandLineHelperTest {
 
-    @Test
-    public void createCommandLineOptions_optionsCreated_numberOfOptionsCreatedShouldBeCorrect() {
-        // GIVEN
-        int expectedNumberOfOptions = 20;
+  @Test
+  public void createCommandLineOptions_smokeTest_numberOfOptionsCreatedShouldBeCorrect() {
+    // GIVEN
+    int expectedNumberOfOptions = 20;
 
-        // WHEN
-        Options options = CommandLineHelper.createCommandLineOptions();
+    // WHEN
+    Options options = CommandLineHelper.createCommandLineOptions();
 
-        // THEN
-        assertEquals(expectedNumberOfOptions, options.getOptions().size());
-    }
+    // THEN
+    assertEquals(expectedNumberOfOptions, options.getOptions().size());
+  }
 }
