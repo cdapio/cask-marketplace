@@ -14,8 +14,9 @@
  * the License.
  */
 
-package io.cdap.hub;
+package io.cdap.hub.publisher;
 
+import io.cdap.hub.CommandLineHelper;
 import io.cdap.hub.publisher.GCSPublisher;
 import io.cdap.hub.publisher.PublisherFactory;
 import io.cdap.hub.publisher.S3Publisher;
