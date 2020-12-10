@@ -58,8 +58,9 @@ class GCSPublisherTest {
 
     // WHEN
     // Creating the publisher with the stubbed GoogleCloudStorageClient
-    GCSPublisher gcsPublisher = GCSPublisher.builder(someProjectId, "someBucket")
-        .buildWithStorageClient(googleCloudStorageClient);
+    GCSPublisher gcsPublisher = GCSPublisher
+        .builder(googleCloudStorageClient, someProjectId, "someBucket")
+        .build();
     gcsPublisher.publish(hub);
 
     // THEN

@@ -49,8 +49,6 @@ public class GCSPublisher implements Publisher {
 
   private static final Logger LOG = LoggerFactory.getLogger(GCSPublisher.class);
   private static final FileTypeMap fileTypeMap = MimetypesFileTypeMap.getDefaultFileTypeMap();
-  private final GoogleCloudStorageClient googleCloudStorageClient;
-  private final String projectId;
   private final String bucket;
   private final String prefix;
 
@@ -60,21 +58,10 @@ public class GCSPublisher implements Publisher {
 
   private Storage storage;
 
-  private GCSPublisher(String projectId, String bucket, String prefix, boolean dryrun, boolean forcePush) {
-    this.googleCloudStorageClient = new GoogleCloudStorageClient();
-    this.projectId = projectId;
-    this.bucket = bucket;
-    this.prefix = prefix;
-    this.dryrun = dryrun;
-    this.forcePush = forcePush;
-    this.updatedKeys = new HashSet<>();
-  }
-
   private GCSPublisher(
       GoogleCloudStorageClient googleCloudStorageClient,
       String projectId, String bucket, String prefix, boolean dryrun, boolean forcePush) {
-    this.googleCloudStorageClient = googleCloudStorageClient;
-    this.projectId = projectId;
+    this.storage = googleCloudStorageClient.createStorageConnection(projectId);
     this.bucket = bucket;
     this.prefix = prefix;
     this.dryrun = dryrun;
@@ -84,7 +71,6 @@ public class GCSPublisher implements Publisher {
 
   @Override
   public void publish(Hub hub) throws Exception {
-    this.storage = this.googleCloudStorageClient.createStorageConnection(this.projectId);
     updatedKeys.clear();
 
     List<Package> packages = hub.getPackages();
@@ -215,8 +201,8 @@ public class GCSPublisher implements Publisher {
     updatedKeys.add("/" + key);
   }
 
-  public static Builder builder(String projectId, String bucket) {
-    return new Builder(projectId, bucket);
+  public static Builder builder(GoogleCloudStorageClient googleCloudStorageClient, String projectId, String bucket) {
+    return new Builder(googleCloudStorageClient, projectId, bucket);
   }
 
   /**
@@ -224,13 +210,15 @@ public class GCSPublisher implements Publisher {
    */
   public static class Builder {
 
+    private GoogleCloudStorageClient googleCloudStorageClient;
     private final String projectId;
     private final String bucket;
     private String prefix;
     private boolean forcePush;
     private boolean dryrun;
 
-    public Builder(String projectId, String bucket) {
+    public Builder(GoogleCloudStorageClient googleCloudStorageClient, String projectId, String bucket) {
+      this.googleCloudStorageClient = googleCloudStorageClient;
       this.projectId = projectId;
       this.bucket = bucket;
       this.forcePush = false;
@@ -254,10 +242,6 @@ public class GCSPublisher implements Publisher {
     }
 
     public GCSPublisher build() {
-      return new GCSPublisher(projectId, bucket, prefix, dryrun, forcePush);
-    }
-
-    public GCSPublisher buildWithStorageClient(GoogleCloudStorageClient googleCloudStorageClient) {
       return new GCSPublisher(googleCloudStorageClient, projectId, bucket, prefix, dryrun, forcePush);
     }
   }

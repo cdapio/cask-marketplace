@@ -18,6 +18,7 @@ package io.cdap.hub.publisher;
 
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
+import io.cdap.hub.GoogleCloudStorageClient;
 import org.apache.commons.cli.CommandLine;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -55,7 +56,7 @@ public class PublisherFactory {
     }
 
     return GCSPublisher
-        .builder(commandLine.getOptionValue("gcsP"), commandLine.getOptionValue("gcsB"))
+        .builder(new GoogleCloudStorageClient(), commandLine.getOptionValue("gcsP"), commandLine.getOptionValue("gcsB"))
         .build();
   }
 
