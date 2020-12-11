@@ -162,7 +162,7 @@ public class GCSPublisher implements Publisher {
   }
 
   // check if the file in the gcs bucket has a different md5 or the file length.
-  private boolean shouldPush(String keyPrefix, File file) throws IOException {
+  boolean shouldPush(String keyPrefix, File file) throws IOException {
     if (forcePush) {
       return true;
     }
@@ -173,13 +173,12 @@ public class GCSPublisher implements Publisher {
             this.bucket,
             Storage.BlobListOption.prefix(key),
             Storage.BlobListOption.currentDirectory());
-    if (blobs.hasNextPage()) {
-      Blob blob = blobs.getNextPage().getValues().iterator().next();
+    for (Blob blob : blobs.iterateAll()) {
       long existingContentFileLength = blob.getSize();
       long fileLength = file.length();
       String md5Hex = BaseEncoding.base16().encode(Files.hash(file, Hashing.md5()).asBytes());
       if (existingContentFileLength == fileLength &&
-          blob.getEtag() != null && blob.getEtag().equalsIgnoreCase(md5Hex)) {
+          blob.getMd5() != null && blob.getMd5ToHexString().equalsIgnoreCase(md5Hex)) {
         LOG.info("{} has not changed, skipping upload to GCS bucket.", file);
         return false;
       }
