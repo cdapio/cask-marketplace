@@ -67,25 +67,34 @@ class GCSPublisherTest {
     // Asserting that test-service artifact has been uploaded to the local test bucket to correct path
     // Icon, spec, and the jar
     Iterable<Blob> testServiceJar = mockedStorage
-        .list("someBucket", Storage.BlobListOption.prefix("/packages/test-service"))
+        .list("someBucket", Storage.BlobListOption.prefix("packages/test-service"))
         .getValues();
     assertTrue(
         StreamSupport.stream(testServiceJar.spliterator(), false)
             .map(BlobInfo::getName)
-            .allMatch(item -> item.equals("/packages/test-service/1.0.0/test-service-1.0.0.jar")
-                || item.equals("/packages/test-service/1.0.0/icon.png")
-                || item.equals("/packages/test-service/1.0.0/spec.json"))
+            .allMatch(item -> item.equals("packages/test-service/1.0.0/test-service-1.0.0.jar")
+                || item.equals("packages/test-service/1.0.0/icon.png")
+                || item.equals("packages/test-service/1.0.0/spec.json"))
     );
 
-    // Asserting that packages.json and categories.json have been uploaded to correct path
-    Iterable<Blob> metadataJson = mockedStorage
-        .list("someBucket", Storage.BlobListOption.prefix("/packages"))
+    // Asserting that packages.json has been uploaded to correct path
+    Iterable<Blob> packagesJson = mockedStorage
+        .list("someBucket", Storage.BlobListOption.prefix(""))
         .getValues();
     assertTrue(
-        StreamSupport.stream(metadataJson.spliterator(), false)
+        StreamSupport.stream(packagesJson.spliterator(), false)
             .map(BlobInfo::getName)
-            .allMatch(item -> item.equals("/packages/packages.json")
-                || item.equals("/packages/categories.json"))
+            .anyMatch(item -> item.equals("packages.json"))
+    );
+
+    // Asserting that categories.json has been uploaded to correct path
+    Iterable<Blob> categoriesJson = mockedStorage
+        .list("someBucket", Storage.BlobListOption.prefix(""))
+        .getValues();
+    assertTrue(
+        StreamSupport.stream(categoriesJson.spliterator(), false)
+            .map(BlobInfo::getName)
+            .anyMatch(item -> item.equals("categories.json"))
     );
   }
 }

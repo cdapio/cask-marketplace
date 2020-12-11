@@ -80,15 +80,36 @@ public class GCSPublisher implements Publisher {
     for (CategoryMeta categoryMeta : hub.getCategories()) {
       publishCategory(categoryMeta);
     }
+
+    StringBuilder keyBuilder = new StringBuilder();
+    if (prefix != null && !prefix.equals("")) {
+      keyBuilder.append(prefix);
+      keyBuilder.append("/");
+    }
+    String key = keyBuilder.toString();
+
     LOG.info("Publishing package catalog");
-    putFilesIfChanged(prefix + "/", hub.getPackageCatalog());
+    putFilesIfChanged(key, hub.getPackageCatalog());
     LOG.info("Publishing category catalog");
-    putFilesIfChanged(prefix + "/", hub.getCategoryCatalog());
+    putFilesIfChanged(key, hub.getCategoryCatalog());
   }
 
   private void publishPackage(Package pkg) throws Exception {
     LOG.info("Publishing package {}-{}", pkg.getName(), pkg.getVersion());
-    String keyPrefix = String.format("%s/packages/%s/%s/", prefix, pkg.getName(), pkg.getVersion());
+    StringBuilder keyPrefixBuilder = new StringBuilder();
+    if (prefix != null && !prefix.equals("")) {
+      keyPrefixBuilder.append(prefix);
+      keyPrefixBuilder.append("/");
+    }
+
+    keyPrefixBuilder.append("packages");
+    keyPrefixBuilder.append("/");
+    keyPrefixBuilder.append(pkg.getName());
+    keyPrefixBuilder.append("/");
+    keyPrefixBuilder.append(pkg.getVersion());
+    keyPrefixBuilder.append("/");
+
+    String keyPrefix = keyPrefixBuilder.toString();
 
     putFilesIfChanged(keyPrefix, pkg.getIcon());
     putFilesIfChanged(keyPrefix, pkg.getLicense());
@@ -109,7 +130,7 @@ public class GCSPublisher implements Publisher {
     for (Blob blob : blobs.iterateAll()) {
 
       String objectKey = blob.getName();
-      String name = objectKey.substring(keyPrefix.length());
+      String name = objectKey.substring(keyPrefixBuilder.length());
       if (!pkg.getFileNames().contains(name)) {
         if (!dryrun) {
           LOG.info("Deleting object {} from gcs bucket since it does not exist in the package anymore.", objectKey);
