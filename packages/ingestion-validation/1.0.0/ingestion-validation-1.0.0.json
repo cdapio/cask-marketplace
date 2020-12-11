@@ -1,0 +1,500 @@
+{
+    "name": "ingestion_validation_template",
+    "description": "Data Pipeline Application",
+    "artifact": {
+        "name": "cdap-data-pipeline",
+        "version": "6.1.3",
+        "scope": "SYSTEM"
+    },
+    "config": {
+        "resources": {
+            "memoryMB": "4096",
+            "virtualCores": "2"
+        },
+        "driverResources": {
+            "memoryMB": "4096",
+            "virtualCores": "2"
+        },
+        "connections": [
+            {
+                "from": "InputFile",
+                "to": "Deduplicate"
+            },
+            {
+                "from": "Deduplicate",
+                "to": "DataTransformation"
+            },
+            {
+                "from": "DataTransformation",
+                "to": "RowCountThresholdValidation"
+            },
+            {
+                "from": "RowCountThresholdValidation",
+                "to": "FailPipelineByRowCount",
+                "condition": "false"
+            },
+            {
+                "from": "RowCountThresholdValidation",
+                "to": "Uniqueness Threshold",
+                "condition": "true"
+            },
+            {
+                "from": "Uniqueness Threshold",
+                "to": "RecordsValidation"
+            },
+            {
+                "from": "RecordsValidation",
+                "to": "CountBadRecords"
+            },
+            {
+                "from": "RecordsValidation",
+                "to": "ErrorCollector"
+            },
+            {
+                "from": "CountBadRecords",
+                "to": "FailPipelineByBadRecords",
+                "condition": "false"
+            },
+            {
+                "from": "CountBadRecords",
+                "to": "OutputFile",
+                "condition": "true"
+            },
+            {
+                "from": "ErrorCollector",
+                "to": "IfOutputErrorRecords"
+            },
+            {
+                "from": "IfOutputErrorRecords",
+                "to": "FailedOutput",
+                "condition": "true"
+            }
+        ],
+        "comments": [],
+        "postActions": [],
+        "properties": {},
+        "processTimingEnabled": true,
+        "stageLoggingEnabled": false,
+        "stages": [
+            {
+                "name": "InputFile",
+                "plugin": {
+                    "name": "GCSFile",
+                    "type": "batchsource",
+                    "label": "InputFile",
+                    "artifact": {
+                        "name": "google-cloud",
+                        "version": "0.14.11",
+                        "scope": "USER"
+                    },
+                    "properties": {
+                        "project": "liveramp-eng-data-ops-dev",
+                        "format": "text",
+                        "skipHeader": "true",
+                        "serviceFilePath": "auto-detect",
+                        "filenameOnly": "false",
+                        "recursive": "false",
+                        "encrypted": "false",
+                        "schema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"body\",\"type\":\"string\"}]}",
+                        "referenceName": "lge-test-dop.test.csv",
+                        "copyHeader": "false",
+                        "path": "${input.file.path}"
+                    }
+                },
+                "outputSchema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"body\",\"type\":\"string\"}]}",
+                "type": "batchsource",
+                "label": "InputFile",
+                "icon": "fa-plug"
+            },
+            {
+                "name": "Deduplicate",
+                "plugin": {
+                    "name": "Deduplicate",
+                    "type": "batchaggregator",
+                    "label": "Deduplicate",
+                    "artifact": {
+                        "name": "core-plugins",
+                        "version": "2.3.6",
+                        "scope": "SYSTEM"
+                    },
+                    "properties": {
+                        "uniqueFields": "body",
+                        "filterOperation": "body:First"
+                    }
+                },
+                "outputSchema": [
+                    {
+                        "name": "etlSchemaBody",
+                        "schema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"body\",\"type\":\"string\"}]}"
+                    }
+                ],
+                "inputSchema": [
+                    {
+                        "name": "GCS",
+                        "schema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"body\",\"type\":\"string\"}]}"
+                    }
+                ],
+                "type": "batchaggregator",
+                "label": "Deduplicate",
+                "icon": "icon-deduplicator"
+            },
+            {
+                "name": "DataTransformation",
+                "plugin": {
+                    "name": "Wrangler",
+                    "type": "transform",
+                    "label": "DataTransformation",
+                    "artifact": {
+                        "name": "wrangler-transform",
+                        "version": "4.1.7",
+                        "scope": "SYSTEM"
+                    },
+                    "properties": {
+                        "field": "*",
+                        "precondition": "false",
+                        "threshold": "1",
+                        "schema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"cst_id\",\"type\":[\"string\",\"null\"]},{\"name\":\"order_num\",\"type\":[\"string\",\"null\"]},{\"name\":\"trx_amount\",\"type\":[\"string\",\"null\"]},{\"name\":\"trx_date\",\"type\":[\"string\",\"null\"]}]}",
+                        "workspaceId": "dbde73a6-bffd-4578-bfe8-790c3d1c2db4",
+                        "directives": "parse-as-csv :body ',' false\nrename body_1 cst_id\nrename body_2 order_num\nrename body_3 trx_amount\nrename body_4 trx_date\ndrop body"
+                    }
+                },
+                "outputSchema": [
+                    {
+                        "name": "etlSchemaBody",
+                        "schema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"cst_id\",\"type\":[\"string\",\"null\"]},{\"name\":\"order_num\",\"type\":[\"string\",\"null\"]},{\"name\":\"trx_amount\",\"type\":[\"string\",\"null\"]},{\"name\":\"trx_date\",\"type\":[\"string\",\"null\"]}]}"
+                    }
+                ],
+                "inputSchema": [
+                    {
+                        "name": "Deduplicate",
+                        "schema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"body\",\"type\":\"string\"}]}"
+                    }
+                ],
+                "type": "transform",
+                "label": "DataTransformation",
+                "icon": "icon-DataPreparation"
+            },
+            {
+                "name": "RowCountThresholdValidation",
+                "plugin": {
+                    "name": "Conditional",
+                    "type": "condition",
+                    "label": "RowCountThresholdValidation",
+                    "artifact": {
+                        "name": "condition-plugins",
+                        "version": "1.4.2",
+                        "scope": "SYSTEM"
+                    },
+                    "properties": {
+                        "expression": "${row.count.threshold.flag} != true || ((1.0-${row.count.threshold}/100.0)*${row.count.previous.average}<token['FileParser']['input'] && token['FileParser']['input']<(1.0+${row.count.threshold}/100.0)*${row.count.previous.average})"
+                    }
+                },
+                "outputSchema": [
+                    {
+                        "name": "etlSchemaBody",
+                        "schema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"cst_id\",\"type\":[\"string\",\"null\"]},{\"name\":\"order_num\",\"type\":[\"string\",\"null\"]},{\"name\":\"trx_amount\",\"type\":[\"string\",\"null\"]},{\"name\":\"trx_date\",\"type\":[\"string\",\"null\"]}]}"
+                    }
+                ],
+                "inputSchema": [
+                    {
+                        "name": "FileParser",
+                        "schema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"cst_id\",\"type\":[\"string\",\"null\"]},{\"name\":\"order_num\",\"type\":[\"string\",\"null\"]},{\"name\":\"trx_amount\",\"type\":[\"string\",\"null\"]},{\"name\":\"trx_date\",\"type\":[\"string\",\"null\"]}]}"
+                    }
+                ],
+                "type": "condition",
+                "label": "RowCountThresholdValidation",
+                "icon": "fa-question-circle-o"
+            },
+            {
+                "name": "FailPipelineByRowCount",
+                "plugin": {
+                    "name": "FailPipeline",
+                    "type": "batchsink",
+                    "label": "FailPipelineByRowCount",
+                    "artifact": {
+                        "name": "failpipeline-sink-plugins",
+                        "version": "1.1.0",
+                        "scope": "USER"
+                    },
+                    "properties": {
+                        "referenceName": "FailPipelineByRowCount"
+                    }
+                },
+                "outputSchema": [
+                    {
+                        "name": "etlSchemaBody",
+                        "schema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"cst_id\",\"type\":[\"string\",\"null\"]},{\"name\":\"order_num\",\"type\":[\"string\",\"null\"]},{\"name\":\"trx_amount\",\"type\":[\"string\",\"null\"]},{\"name\":\"trx_date\",\"type\":[\"string\",\"null\"]}]}"
+                    }
+                ],
+                "inputSchema": [
+                    {
+                        "name": "RowCountThresholdValidation",
+                        "schema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"cst_id\",\"type\":[\"string\",\"null\"]},{\"name\":\"order_num\",\"type\":[\"string\",\"null\"]},{\"name\":\"trx_amount\",\"type\":[\"string\",\"null\"]},{\"name\":\"trx_date\",\"type\":[\"string\",\"null\"]}]}"
+                    }
+                ],
+                "type": "batchsink",
+                "label": "FailPipelineByRowCount",
+                "icon": "fa-plug"
+            },
+            {
+                "name": "Uniqueness Threshold",
+                "plugin": {
+                    "name": "UniquenessThreshold",
+                    "type": "batchaggregator",
+                    "label": "Uniqueness Threshold",
+                    "artifact": {
+                        "name": "AnalyticsEnvironment",
+                        "version": "1.0.4",
+                        "scope": "USER"
+                    },
+                    "properties": {
+                        "minNumOfRecords": "${fields.uniqueness.minimum.records.num}",
+                        "fieldsUniThresholds": "${fields.uniqueness.thresholds}"
+                    }
+                },
+                "outputSchema": [
+                    {
+                        "name": "etlSchemaBody",
+                        "schema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"cst_id\",\"type\":[\"string\",\"null\"]},{\"name\":\"order_num\",\"type\":[\"string\",\"null\"]},{\"name\":\"trx_amount\",\"type\":[\"string\",\"null\"]},{\"name\":\"trx_date\",\"type\":[\"string\",\"null\"]}]}"
+                    }
+                ],
+                "inputSchema": [
+                    {
+                        "name": "RowCountThresholdValidation",
+                        "schema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"cst_id\",\"type\":[\"string\",\"null\"]},{\"name\":\"order_num\",\"type\":[\"string\",\"null\"]},{\"name\":\"trx_amount\",\"type\":[\"string\",\"null\"]},{\"name\":\"trx_date\",\"type\":[\"string\",\"null\"]}]}"
+                    }
+                ],
+                "type": "batchaggregator",
+                "label": "Uniqueness Threshold",
+                "icon": "fa-plug"
+            },
+            {
+                "name": "RecordsValidation",
+                "plugin": {
+                    "name": "Wrangler",
+                    "type": "transform",
+                    "label": "RecordsValidation",
+                    "artifact": {
+                        "name": "wrangler-transform",
+                        "version": "4.1.7",
+                        "scope": "SYSTEM"
+                    },
+                    "properties": {
+                        "field": "*",
+                        "precondition": "false",
+                        "threshold": "1",
+                        "schema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"cst_id\",\"type\":[\"int\",\"null\"]},{\"name\":\"order_num\",\"type\":[\"string\",\"null\"]},{\"name\":\"trx_amount\",\"type\":[\"double\",\"null\"]},{\"name\":\"trx_date\",\"type\":[\"string\",\"null\"]}]}",
+                        "directives": "send-to-error size(order_num) < 15\nsend-to-error !dq:isDate(trx_date, \"yyyy-MM-dd\")\nsend-to-error !dq:isNumber(trx_amount)\nsend-to-error cst_id < 10000000 or cst_id > 999999999\nsend-to-error cst_id !~ \".*1.*\"\ncopy trx_date check_date_range_tmp true\nparse-as-simple-date :check_date_range_tmp yyyy-MM-dd\nset-column check_date_range_tmp2 date:UNIXTIMESTAMP_SECONDS(check_date_range_tmp)\nsend-to-error check_date_range_tmp2 < 1514764800\nset-type :cst_id integer\nset-type :trx_amount double"
+                    }
+                },
+                "outputSchema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"cst_id\",\"type\":[\"int\",\"null\"]},{\"name\":\"order_num\",\"type\":[\"string\",\"null\"]},{\"name\":\"trx_amount\",\"type\":[\"double\",\"null\"]},{\"name\":\"trx_date\",\"type\":[\"string\",\"null\"]}]}",
+                "inputSchema": [
+                    {
+                        "name": "Uniqueness Threshold",
+                        "schema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"cst_id\",\"type\":[\"string\",\"null\"]},{\"name\":\"order_num\",\"type\":[\"string\",\"null\"]},{\"name\":\"trx_amount\",\"type\":[\"string\",\"null\"]},{\"name\":\"trx_date\",\"type\":[\"string\",\"null\"]}]}"
+                    }
+                ],
+                "type": "transform",
+                "label": "RecordsValidation",
+                "icon": "icon-DataPreparation"
+            },
+            {
+                "name": "CountBadRecords",
+                "plugin": {
+                    "name": "Conditional",
+                    "type": "condition",
+                    "label": "CountBadRecords",
+                    "artifact": {
+                        "name": "condition-plugins",
+                        "version": "1.4.2",
+                        "scope": "SYSTEM"
+                    },
+                    "properties": {
+                        "expression": "token['RecordsValidation']['error']<=${max.bad.records}"
+                    }
+                },
+                "outputSchema": [
+                    {
+                        "name": "etlSchemaBody",
+                        "schema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"cst_id\",\"type\":[\"int\",\"null\"]},{\"name\":\"order_num\",\"type\":[\"string\",\"null\"]},{\"name\":\"trx_amount\",\"type\":[\"double\",\"null\"]},{\"name\":\"trx_date\",\"type\":[\"string\",\"null\"]}]}"
+                    }
+                ],
+                "inputSchema": [
+                    {
+                        "name": "RecordsValidation",
+                        "schema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"cst_id\",\"type\":[\"int\",\"null\"]},{\"name\":\"order_num\",\"type\":[\"string\",\"null\"]},{\"name\":\"trx_amount\",\"type\":[\"double\",\"null\"]},{\"name\":\"trx_date\",\"type\":[\"string\",\"null\"]}]}"
+                    }
+                ],
+                "type": "condition",
+                "label": "CountBadRecords",
+                "icon": "fa-question-circle-o"
+            },
+            {
+                "name": "ErrorCollector",
+                "plugin": {
+                    "name": "ErrorCollector",
+                    "type": "errortransform",
+                    "label": "ErrorCollector",
+                    "artifact": {
+                        "name": "core-plugins",
+                        "version": "2.3.6",
+                        "scope": "SYSTEM"
+                    },
+                    "properties": {
+                        "messageField": "msg",
+                        "codeField": "code",
+                        "stageField": "node"
+                    }
+                },
+                "outputSchema": [
+                    {
+                        "name": "etlSchemaBody",
+                        "schema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"cst_id\",\"type\":[\"int\",\"null\"]},{\"name\":\"order_num\",\"type\":[\"string\",\"null\"]},{\"name\":\"trx_amount\",\"type\":[\"double\",\"null\"]},{\"name\":\"trx_date\",\"type\":[\"string\",\"null\"]},{\"name\":\"msg\",\"type\":\"string\"},{\"name\":\"code\",\"type\":\"int\"},{\"name\":\"node\",\"type\":\"string\"}]}"
+                    }
+                ],
+                "inputSchema": [
+                    {
+                        "name": "RecordsValidation",
+                        "schema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"cst_id\",\"type\":[\"int\",\"null\"]},{\"name\":\"order_num\",\"type\":[\"string\",\"null\"]},{\"name\":\"trx_amount\",\"type\":[\"double\",\"null\"]},{\"name\":\"trx_date\",\"type\":[\"string\",\"null\"]}]}"
+                    }
+                ],
+                "type": "errortransform",
+                "label": "ErrorCollector",
+                "icon": "fa-exclamation-triangle"
+            },
+            {
+                "name": "FailPipelineByBadRecords",
+                "plugin": {
+                    "name": "FailPipeline",
+                    "type": "batchsink",
+                    "label": "FailPipelineByBadRecords",
+                    "artifact": {
+                        "name": "failpipeline-sink-plugins",
+                        "version": "1.1.0",
+                        "scope": "USER"
+                    },
+                    "properties": {
+                        "referenceName": "FailPipelineByBadRecords"
+                    }
+                },
+                "outputSchema": [
+                    {
+                        "name": "etlSchemaBody",
+                        "schema": ""
+                    }
+                ],
+                "inputSchema": [
+                    {
+                        "name": "CountBadRecords1",
+                        "schema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"cst_id\",\"type\":[\"int\",\"null\"]},{\"name\":\"order_num\",\"type\":[\"string\",\"null\"]},{\"name\":\"trx_amount\",\"type\":[\"double\",\"null\"]},{\"name\":\"trx_date\",\"type\":[\"string\",\"null\"]}]}"
+                    }
+                ],
+                "type": "batchsink",
+                "label": "FailPipelineByBadRecords",
+                "icon": "fa-plug"
+            },
+            {
+                "name": "OutputFile",
+                "plugin": {
+                    "name": "GCS",
+                    "type": "batchsink",
+                    "label": "OutputFile",
+                    "artifact": {
+                        "name": "google-cloud",
+                        "version": "0.14.11",
+                        "scope": "USER"
+                    },
+                    "properties": {
+                        "project": "auto-detect",
+                        "suffix": "yyyy-MM-dd-HH-mm",
+                        "format": "csv",
+                        "serviceFilePath": "auto-detect",
+                        "location": "us",
+                        "schema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"cst_id\",\"type\":[\"int\",\"null\"]},{\"name\":\"order_num\",\"type\":[\"string\",\"null\"]},{\"name\":\"trx_amount\",\"type\":[\"double\",\"null\"]},{\"name\":\"trx_date\",\"type\":[\"string\",\"null\"]}]}",
+                        "referenceName": "OutputFile",
+                        "path": "${output.path}"
+                    }
+                },
+                "outputSchema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"cst_id\",\"type\":[\"int\",\"null\"]},{\"name\":\"order_num\",\"type\":[\"string\",\"null\"]},{\"name\":\"trx_amount\",\"type\":[\"double\",\"null\"]},{\"name\":\"trx_date\",\"type\":[\"string\",\"null\"]}]}",
+                "inputSchema": [
+                    {
+                        "name": "CountBadRecords1",
+                        "schema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"cst_id\",\"type\":[\"int\",\"null\"]},{\"name\":\"order_num\",\"type\":[\"string\",\"null\"]},{\"name\":\"trx_amount\",\"type\":[\"double\",\"null\"]},{\"name\":\"trx_date\",\"type\":[\"string\",\"null\"]}]}"
+                    }
+                ],
+                "type": "batchsink",
+                "label": "OutputFile",
+                "icon": "fa-plug"
+            },
+            {
+                "name": "IfOutputErrorRecords",
+                "plugin": {
+                    "name": "Conditional",
+                    "type": "condition",
+                    "label": "IfOutputErrorRecords",
+                    "artifact": {
+                        "name": "condition-plugins",
+                        "version": "1.4.2",
+                        "scope": "SYSTEM"
+                    },
+                    "properties": {
+                        "expression": "token['RecordsValidation']['error']<=${max.bad.records} && size('${error.output.path}') > 1"
+                    }
+                },
+                "outputSchema": [
+                    {
+                        "name": "etlSchemaBody",
+                        "schema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"cst_id\",\"type\":[\"int\",\"null\"]},{\"name\":\"order_num\",\"type\":[\"string\",\"null\"]},{\"name\":\"trx_amount\",\"type\":[\"double\",\"null\"]},{\"name\":\"trx_date\",\"type\":[\"string\",\"null\"]},{\"name\":\"msg\",\"type\":\"string\"},{\"name\":\"code\",\"type\":\"int\"},{\"name\":\"node\",\"type\":\"string\"}]}"
+                    }
+                ],
+                "inputSchema": [
+                    {
+                        "name": "ErrorCollector",
+                        "schema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"cst_id\",\"type\":[\"int\",\"null\"]},{\"name\":\"order_num\",\"type\":[\"string\",\"null\"]},{\"name\":\"trx_amount\",\"type\":[\"double\",\"null\"]},{\"name\":\"trx_date\",\"type\":[\"string\",\"null\"]},{\"name\":\"msg\",\"type\":\"string\"},{\"name\":\"code\",\"type\":\"int\"},{\"name\":\"node\",\"type\":\"string\"}]}"
+                    }
+                ],
+                "type": "condition",
+                "label": "IfOutputErrorRecords",
+                "icon": "fa-question-circle-o"
+            },
+            {
+                "name": "FailedOutput",
+                "plugin": {
+                    "name": "GCS",
+                    "type": "batchsink",
+                    "label": "FailedOutput",
+                    "artifact": {
+                        "name": "google-cloud",
+                        "version": "0.14.11",
+                        "scope": "USER"
+                    },
+                    "properties": {
+                        "project": "auto-detect",
+                        "suffix": "yyyy-MM-dd-HH-mm",
+                        "format": "csv",
+                        "serviceFilePath": "auto-detect",
+                        "location": "us",
+                        "schema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"cst_id\",\"type\":[\"int\",\"null\"]},{\"name\":\"order_num\",\"type\":[\"string\",\"null\"]},{\"name\":\"trx_amount\",\"type\":[\"double\",\"null\"]},{\"name\":\"trx_date\",\"type\":[\"string\",\"null\"]}]}",
+                        "referenceName": "FailedOutputFile",
+                        "path": "${error.output.path}"
+                    }
+                },
+                "outputSchema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"cst_id\",\"type\":[\"int\",\"null\"]},{\"name\":\"order_num\",\"type\":[\"string\",\"null\"]},{\"name\":\"trx_amount\",\"type\":[\"double\",\"null\"]},{\"name\":\"trx_date\",\"type\":[\"string\",\"null\"]}]}",
+                "inputSchema": [
+                    {
+                        "name": "CountBadRecords2",
+                        "schema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"cst_id\",\"type\":[\"int\",\"null\"]},{\"name\":\"order_num\",\"type\":[\"string\",\"null\"]},{\"name\":\"trx_amount\",\"type\":[\"double\",\"null\"]},{\"name\":\"trx_date\",\"type\":[\"string\",\"null\"]},{\"name\":\"msg\",\"type\":\"string\"},{\"name\":\"code\",\"type\":\"int\"},{\"name\":\"node\",\"type\":\"string\"}]}"
+                    }
+                ],
+                "type": "batchsink",
+                "label": "FailedOutput",
+                "icon": "fa-plug"
+            }
+        ],
+        "schedule": "0 * * * *",
+        "engine": "spark",
+        "numOfRecordsPreview": 100,
+        "description": "Data Pipeline Application",
+        "maxConcurrentRuns": 1
+    }
+}
