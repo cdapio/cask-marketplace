@@ -1,0 +1,25 @@
+{
+  "specVersion": "1.0",
+  "description": "This application represents a test service, which is used in the GCS Publisher integration test",
+  "label": "Test Application",
+  "author": "LSH DOP Team",
+  "org": "Cask Data, Inc.",
+  "cdapVersion": "[4.1.0,4.1.0]",
+  "created": 1490214918,
+  "categories": [
+    "test"
+  ],
+  "actions": [
+    {
+      "type": "one_step_deploy_app",
+      "label": "Deploy Test Service App",
+      "arguments": [
+        {
+          "name": "jar",
+          "value": "test-service-1.0.0.jar",
+          "canModify": false
+        }
+      ]
+    }
+  ]
+}
