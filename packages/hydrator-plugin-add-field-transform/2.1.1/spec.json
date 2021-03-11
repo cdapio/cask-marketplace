@@ -6,7 +6,7 @@
   "org": "Cask Data, Inc.",
   "created": 1603752645,
   "categories": [ "hydrator-plugin" ],
-  "cdapVersion": "[6.0.0,7.0.0-SNAPSHOT)",
+  "cdapVersion": "[6.0.0,6.0.0)",
   "actions": [
     {
       "type": "one_step_deploy_plugin",

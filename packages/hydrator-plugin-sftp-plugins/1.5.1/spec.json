@@ -4,8 +4,8 @@
   "label": "SFTP Plugins",
   "author": "Cask",
   "org": "Cask Data, Inc.",
-  "cdapVersion": "[6.0.0,6.0.0)",
-  "created": 1607467066,
+  "cdapVersion": "[6.0.0,7.0.0-SNAPSHOT)",
+  "created": 1614971335,
   "categories": [
     "hydrator-plugin"
   ],
@@ -21,7 +21,7 @@
         },
         {
           "name": "version",
-          "value": "1.5.0",
+          "value": "1.5.1",
           "canModify": false
         },
         {
@@ -31,12 +31,12 @@
         },
         {
           "name": "config",
-          "value": "sftp-actions-1.5.0.json",
+          "value": "sftp-actions-1.5.1.json",
           "canModify": false
         },
         {
           "name": "jar",
-          "value": "sftp-actions-1.5.0.jar",
+          "value": "sftp-actions-1.5.1.jar",
           "canModify": false
         }
       ]
