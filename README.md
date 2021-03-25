@@ -52,13 +52,20 @@ catalog at the top level and adding 'spec.json.asc', 'archive.zip', and 'archive
     packages/<name>/<version>/<file2>
     packages/<name>/<version>/<file2>.asc
 
-To build all the packages and also push them to s3:
+## Publisher
 
-    java -cp packager/target/*:packager/target/lib/* io.cdap.hub.Tool publish -k <gpg keyring file> -i <keyid> -p <key password> -s3b <s3 bucket> -s3a <s3 access key> -s3s <s3 secret key>
-
-This will build and sign all packages, as well as push anything that has changed to s3.
+You can also build all the packages and `publish` them, to either AWS s3 bucket or GCS bucket.<br>
+This will build and sign all packages, as well as push anything that has changed to the target you've chosen.
 The tool will use the md5 and file size to determine whether an object has changed or not.
 Signatures will only be pushed if the corresponding file has changed.
+
+### To publish to AWS s3
+
+    java -cp packager/target/*:packager/target/lib/* io.cdap.hub.Tool publish -publisher s3 -k <gpg keyring file> -i <keyid> -p <key password> -s3b <s3 bucket> -s3a <s3 access key> -s3s <s3 secret key>
+
+### To publish to GCS bucket
+
+    java -cp "packager/target/*":"packager/target/lib/*" io.cdap.hub.Tool publish -publisher gcs -gcsP <your gcp project id> -gcsB <your bucket>
 
 ## Package specs
 

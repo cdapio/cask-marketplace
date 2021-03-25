@@ -16,16 +16,22 @@
 
 package io.cdap.hub;
 
-/**
- * Publishes the Hub.
- */
-public interface Publisher {
+import org.apache.commons.cli.Options;
+import org.junit.jupiter.api.Test;
 
-  /**
-   * Publish the hub.
-   *
-   * @param hub the hub to publish
-   * @throws Exception if there was an error publishing
-   */
-  void publish(Hub hub) throws Exception;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+class CommandLineHelperTest {
+
+  @Test
+  public void createCommandLineOptions_smokeTest_numberOfOptionsCreatedShouldBeCorrect() {
+    // GIVEN
+    int expectedNumberOfOptions = 20;
+
+    // WHEN
+    Options options = CommandLineHelper.createCommandLineOptions();
+
+    // THEN
+    assertEquals(expectedNumberOfOptions, options.getOptions().size());
+  }
 }
